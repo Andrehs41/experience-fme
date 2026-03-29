@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'Modi Thorson';
+  src: url('/fonts/modithorson.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block; 
+}
+
+:root {
+  --font-main: 'Modi Thorson', sans-serif;
+  --black:      #0a0a0a;
+  --cream:      #e8e0d0;
+  --cream-dim:  #b8b0a0;
+  --gold:       #c9a84c;
+  --white:      #f5f2ec;
+}
+
+html, body {
+  font-family: var(--font-main);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+}
+
