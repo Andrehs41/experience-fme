@@ -3,10 +3,10 @@ import { useGSAP } from "@gsap/react";
 import { gsap } from "../lib/gsap";
 import AnimatedText from "../components/AnimatedText";
 import MagneticButton from "../components/MagneticButton";
-import { useScrollAnimation } from "../hooks/useScrollAnimation";
 import Intro from "../components/Intro";
 import ManifestoSection from "../components/home/ManifestoSection";
 import StoreCTA from "../components/home/StoreCTA";
+import BentoCards from "../components/home/BentoCards";
 
 // Hero 
 interface HeroProps { startAnimation: boolean; }
@@ -51,32 +51,6 @@ function Hero({ startAnimation }: HeroProps) {
     );
 }
 
-// Cards
-function CardsSection() {
-    const container = useScrollAnimation(".card-item", { stagger: 0.15, y: 80 });
-    const cards = [
-        { title: "Identidad", desc: "Es la esencia de lo que somos." },
-        { title: "Barrio", desc: "Es el lugar donde nace la pasión." },
-        { title: "Actitud", desc: "Es la forma en que enfrentamos el mundo." },
-    ];
-    return (
-        <section ref={container} className="py-32 px-6 max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {cards.map((c) => (
-                    <div
-                        key={c.title}
-                        data-cursor={c.title}
-                        className="card-item p-8 border border-white/10 rounded-2xl hover:border-white/30 transition-colors duration-300 group"
-                    >
-                        <h3 className="text-xl font-semibold mb-3">{c.title}</h3>
-                        <p className="text-neutral-400 text-sm leading-relaxed">{c.desc}</p>
-                    </div>
-                ))}
-            </div>
-        </section>
-    );
-}
-
 // Parallax
 function ParallaxSection() {
     const container = useRef<HTMLDivElement>(null);
@@ -113,7 +87,7 @@ export default function Home() {
             <Intro onComplete={handleIntroComplete} />
             <div className={introDone ? "opacity-100" : "opacity-0"}>
                 <Hero startAnimation={introDone} />
-                <CardsSection />
+                <BentoCards />
                 <ParallaxSection />
                 <ManifestoSection />
                 <StoreCTA />

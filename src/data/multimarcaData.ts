@@ -2,11 +2,11 @@ export interface Facet {
     id: "fme" | "multimarca";
     tag: string;
     topLabel: string;
-    title: string[];          // líneas del título
+    title: string[];          
     titleAccent: number | null;     
     desc: string;
     cta: string;
-    href: string;            // link externo o ruta interna
+    href: string;            
     external: boolean;
 }
 
