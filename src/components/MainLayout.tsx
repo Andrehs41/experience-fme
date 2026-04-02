@@ -1,6 +1,8 @@
-import { Outlet, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import Navbar from "./Navbar";
+import GlobalScrollProgress from "./GlobalScrollProgress";
+import PageTransition from "./PageTransition";
 import { ScrollTrigger } from "../lib/gsap";
 import Cursor from "./utils/Cursor";
 
@@ -17,12 +19,13 @@ function ScrollRefresh() {
 
 export default function MainLayout() {
     return (
-        <div className="relative min-h-screen bg-black">
+        <div className="relative min-h-screen bg-fme-black text-fme-white">
+            <GlobalScrollProgress />
             <Cursor />
             <ScrollRefresh />
             <Navbar />
-            <main>
-                <Outlet /> 
+            <main className="min-h-[100dvh] pt-[calc(var(--nav-height)+env(safe-area-inset-top,0px))]">
+                <PageTransition />
             </main>
         </div>
     );

@@ -1,5 +1,6 @@
 import { useRef } from "react";
-import { gsap, useGSAP } from "../lib/gsap";
+import { Link } from "react-router-dom";
+import { gsap, ScrollTrigger, useGSAP } from "../lib/gsap";
 import AnimatedText from "../components/AnimatedText";
 import { BARRIO_DATA } from "../data/barrioData";
 
@@ -9,156 +10,279 @@ export default function Barrio() {
     const triggerRef = useRef<HTMLDivElement>(null);
 
     useGSAP(() => {
-        // Scroll Horizontal
-        const scrollTween = gsap.to(horizontalRef.current, {
-            x: () => -(horizontalRef.current!.scrollWidth - window.innerWidth),
-            ease: "none",
-            scrollTrigger: {
-                trigger: triggerRef.current,
-                pin: true,
-                scrub: 1,
-                start: "top top",
-                end: () => `+=${horizontalRef.current!.scrollWidth}`,
-                invalidateOnRefresh: true,
-                fastScrollEnd: true, // Ayuda con el final del scroll
-                refreshPriority: 1,
-            }
-        });
+        const root = sectionRef.current;
+        const horizontal = horizontalRef.current;
+        const trigger = triggerRef.current;
+        if (!root || !horizontal || !trigger) return;
 
-        // Entrada y salida de las imagenes - Cards
         const cards = gsap.utils.toArray<HTMLElement>(".item-card");
+        const mm = gsap.matchMedia();
 
-        cards.forEach((card, index) => {
-            const img = card.querySelector("img");
-            const isLastCard = index === cards.length - 1;
-            const tl = gsap.timeline({
+        mm.add("(min-width: 768px)", () => {
+            const getScrollDistance = () =>
+                Math.max(0, horizontal.scrollWidth - window.innerWidth);
+
+            const scrollTween = gsap.to(horizontal, {
+                x: () => -getScrollDistance(),
+                ease: "none",
                 scrollTrigger: {
-                    trigger: card,
-                    containerAnimation: scrollTween,
-                    start: "left 98%",
-                    end: isLastCard ? "right -20%" : "right 5%",
-                    toggleActions: "play reverse play reverse",
+                    trigger,
+                    pin: true,
+                    scrub: 1,
+                    start: "top top",
+                    /* 1:1 con el recorrido horizontal real; scrollWidth solo alargaba el pin y “cortaba” el scrub */
+                    end: () => `+=${getScrollDistance()}`,
                     invalidateOnRefresh: true,
-                }
+                    anticipatePin: 1,
+                    fastScrollEnd: true,
+                    refreshPriority: 1,
+                },
             });
 
-            tl.fromTo(img,
-                {
-                    scale: 1.6,
-                    clipPath: "inset(100% 0% 0% 0%)",
-                    opacity: 0,
-                    rotateY: -50
-                },
-                {
-                    scale: 1,
-                    clipPath: "inset(0% 0% 0% 0%)",
-                    opacity: 1,
-                    rotateY: 0,
-                    duration: 1.2,
-                    ease: "expo.out",
-                }
-            );
+            const detachCardListeners: Array<() => void> = [];
 
-            card.addEventListener("mousemove", (e) => {
-                const { left, top, width, height } = card.getBoundingClientRect();
-                const x = (e.clientX - left) / width - 0.5;
-                const y = (e.clientY - top) / height - 0.5;
+            cards.forEach((card: HTMLElement, index: number) => {
+                const img = card.querySelector("img");
+                if (!img) return;
 
-                gsap.to(img, {
-                    rotateY: x * 15,
-                    rotateX: -y * 15,
-                    x: x * 20,
-                    y: y * 20,
-                    duration: 0.6,
-                    ease: "power2.out"
+                const isLastCard = index === cards.length - 1;
+                const tl = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: card,
+                        containerAnimation: scrollTween,
+                        start: "left 98%",
+                        end: isLastCard ? "right -20%" : "right 5%",
+                        toggleActions: "play reverse play reverse",
+                        invalidateOnRefresh: true,
+                    },
+                });
+
+                tl.fromTo(
+                    img,
+                    {
+                        scale: 1.6,
+                        clipPath: "inset(100% 0% 0% 0%)",
+                        opacity: 0,
+                        rotateY: -50,
+                    },
+                    {
+                        scale: 1,
+                        clipPath: "inset(0% 0% 0% 0%)",
+                        opacity: 1,
+                        rotateY: 0,
+                        duration: 1.2,
+                        ease: "expo.out",
+                    }
+                );
+
+                const tiltEase = { duration: 0.55, ease: "power2.out" as const };
+                const rotateYTo = gsap.quickTo(img, "rotateY", tiltEase);
+                const rotateXTo = gsap.quickTo(img, "rotateX", tiltEase);
+                const xTo = gsap.quickTo(img, "x", tiltEase);
+                const yTo = gsap.quickTo(img, "y", tiltEase);
+
+                const onMove = (e: MouseEvent) => {
+                    const { left, top, width, height } = card.getBoundingClientRect();
+                    const x = (e.clientX - left) / width - 0.5;
+                    const y = (e.clientY - top) / height - 0.5;
+                    rotateYTo(x * 15);
+                    rotateXTo(-y * 15);
+                    xTo(x * 20);
+                    yTo(y * 20);
+                };
+
+                const onLeave = () => {
+                    rotateYTo(0);
+                    rotateXTo(0);
+                    xTo(0);
+                    yTo(0);
+                };
+
+                card.addEventListener("mousemove", onMove);
+                card.addEventListener("mouseleave", onLeave);
+                detachCardListeners.push(() => {
+                    card.removeEventListener("mousemove", onMove);
+                    card.removeEventListener("mouseleave", onLeave);
                 });
             });
 
-            card.addEventListener("mouseleave", () => {
-                gsap.to(img, { rotateY: 0, rotateX: 0, x: 0, y: 0, duration: 0.6 });
-            });
+            const finalText = root.querySelector(".final-text-trigger");
+            if (finalText) {
+                gsap.fromTo(
+                    finalText,
+                    { y: 100, opacity: 0, rotateX: -30 },
+                    {
+                        y: 0,
+                        opacity: 1,
+                        rotateX: 0,
+                        ease: "power2.out",
+                        scrollTrigger: {
+                            trigger: finalText,
+                            containerAnimation: scrollTween,
+                            start: "left 95%",
+                            end: "left 60%",
+                            scrub: true,
+                        },
+                    }
+                );
+            }
+
+            return () => {
+                detachCardListeners.forEach((off) => off());
+                scrollTween.kill();
+            };
         });
 
-        const finalText = sectionRef.current?.querySelector(".final-text-trigger");
-        if (finalText) {
-            gsap.fromTo(finalText,
-                { y: 100, opacity: 0, rotateX: -30 },
-                {
-                    y: 0,
-                    opacity: 1,
-                    rotateX: 0,
-                    ease: "power2.out",
-                    scrollTrigger: {
-                        trigger: finalText,
-                        containerAnimation: scrollTween,
-                        start: "left 95%",
-                        end: "left 60%",
-                        scrub: true,
+        mm.add("(max-width: 767px)", () => {
+            cards.forEach((card: HTMLElement) => {
+                const img = card.querySelector("img");
+                if (!img) return;
+                gsap.fromTo(
+                    img,
+                    { opacity: 0, y: 48, scale: 1.04 },
+                    {
+                        opacity: 1,
+                        y: 0,
+                        scale: 1,
+                        duration: 0.9,
+                        ease: "power3.out",
+                        scrollTrigger: {
+                            trigger: card,
+                            start: "top 88%",
+                            toggleActions: "play none none reverse",
+                        },
                     }
-                }
-            );
-        }
+                );
+            });
 
+            const finalText = root.querySelector(".final-text-trigger");
+            if (finalText) {
+                gsap.fromTo(
+                    finalText,
+                    { opacity: 0, y: 36 },
+                    {
+                        opacity: 1,
+                        y: 0,
+                        duration: 1,
+                        ease: "power2.out",
+                        scrollTrigger: {
+                            trigger: finalText,
+                            start: "top 85%",
+                            toggleActions: "play none none reverse",
+                        },
+                    }
+                );
+            }
+        });
+
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => ScrollTrigger.refresh());
+        });
+
+        const onResize = () => ScrollTrigger.refresh();
+        window.addEventListener("resize", onResize);
+        window.addEventListener("load", onResize);
+
+        return () => {
+            window.removeEventListener("resize", onResize);
+            window.removeEventListener("load", onResize);
+            mm.revert();
+        };
     }, { scope: sectionRef });
 
     return (
-        <section ref={sectionRef} className="bg-black text-white select-none overflow-hidden">
+        <section ref={sectionRef} className="fme-page-vignette relative overflow-x-hidden text-fme-white select-none fme-noise-soft">
 
-            <div className="h-[60vh] flex flex-col items-center justify-center text-center px-6">
-                <AnimatedText text="Crónicas Urbanas" variant="fall" className="text-[gold] tracking-[0.8em] uppercase text-[10px] mb-4" delay={0} immediate={true} />
+            <div className="relative flex min-h-[46vh] flex-col items-center justify-center overflow-x-hidden border-b border-[var(--border-gold-08)] px-4 py-20 text-center sm:px-6 sm:py-24 md:min-h-[58vh] md:py-24">
+                <div
+                    className="pointer-events-none absolute inset-0 opacity-95"
+                    style={{
+                        background:
+                            "radial-gradient(ellipse 85% 70% at 50% 0%, rgb(var(--gold-rgb) / 0.11) 0%, transparent 55%), linear-gradient(180deg, rgb(var(--surface-deep)) 0%, transparent 45%)",
+                    }}
+                    aria-hidden
+                />
+                <div className="pointer-events-none absolute left-6 top-1/4 hidden h-32 w-px bg-gradient-to-b from-fme-gold/40 to-transparent md:block" aria-hidden />
+                <div className="pointer-events-none absolute right-8 top-1/3 hidden h-px w-24 bg-gradient-to-l from-fme-gold/25 to-transparent lg:block" aria-hidden />
+                <AnimatedText text="Desde la calle, no desde un moodboard" variant="fall" className="relative z-[1] mb-3 text-fme-gold text-[9px] tracking-[0.6em] uppercase sm:mb-4 sm:text-[10px] sm:tracking-[0.8em]" delay={0} immediate={true} />
                 <AnimatedText text="EL BARRIO"
                     highlightWords={["barrio"]}
                     variant="fall"
-                    stagger={0.05} className="text-[12vw] font-bold tracking-tighter leading-none " delay={0} immediate={true} />
+                    stagger={0.05} className="relative z-[1] text-[13vw] font-bold leading-none tracking-tighter drop-shadow-[0_0_80px_rgb(var(--gold-rgb)/0.12)] sm:text-[12vw] md:text-[12vw]" delay={0} immediate={true} />
             </div>
 
-            {/* Contenedor de Scroll Horizontal */}
-            <div ref={triggerRef} className="relative h-screen overflow-hidden">
+            <div ref={triggerRef} className="relative md:h-screen md:overflow-hidden">
                 <div
                     ref={horizontalRef}
-                    className="flex h-full items-center gap-[10vw] px-[15vw] w-fit"
+                    className="flex w-full flex-col items-center gap-14 px-4 py-10 md:h-full md:w-fit md:flex-row md:items-center md:gap-[10vw] md:px-[15vw] md:py-0"
                 >
                     {BARRIO_DATA.map((item) => (
                         <div
                             key={item.id}
                             data-cursor={item.title}
-                            className={`item-card relative flex-shrink-0 ${item.size} group [perspective:1200px] will-change-transform`}
+                            className={`item-card group relative flex-shrink-0 [perspective:1200px] will-change-transform ${item.size}`}
                         >
-                            <div className="absolute -top-10 -left-10 text-[8vw] font-bold text-white/[0.03] z-0 pointer-events-none group-hover:text-[gold]/10 transition-colors duration-700">
+                            <div className="pointer-events-none absolute -left-4 -top-6 z-0 text-[12vw] font-bold text-[rgb(var(--white-rgb)_/_0.03)] transition-colors duration-700 group-hover:text-fme-gold/10 sm:-left-6 sm:-top-8 sm:text-[8vw] md:-left-10 md:-top-10">
                                 {item.title}
                             </div>
 
-                            <div className="relative w-full h-full overflow-hidden rounded-sm z-10">
+                            <div className="relative z-10 w-full overflow-hidden rounded-md ring-1 ring-[var(--border-gold-10)] ring-offset-2 ring-offset-[var(--black)] transition-shadow duration-500 group-hover:ring-[var(--border-gold-18)]">
                                 <img
                                     src={item.src}
                                     alt={item.title}
-                                    className="w-full h-full object-cover scale-110 will-change-transform" // Importante: will-change
+                                    className="h-full w-full scale-110 object-cover will-change-transform"
+                                    decoding="async"
+                                    onLoad={() => ScrollTrigger.refresh()}
                                 />
-                                <div className="absolute inset-0 pointer-events-none opacity-20 mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
+                                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-fme-black/50 via-transparent to-fme-black/10" />
+                                <div className="pointer-events-none absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.18] mix-blend-overlay" />
                             </div>
 
-                            {/* Info de la Card */}
-                            <div className="absolute -bottom-6 left-0 flex items-baseline gap-4">
-                                <span className="text-[gold] text-xs font-mono">0{item.id}</span>
-                                <span className="text-[10px] tracking-[0.3em] uppercase opacity-50">{item.title}</span>
+                            <div className="absolute -bottom-5 left-0 flex items-baseline gap-3 sm:-bottom-6 sm:gap-4">
+                                <span className="font-mono text-xs text-fme-gold">0{item.id}</span>
+                                <span className="text-[9px] uppercase tracking-[0.25em] opacity-50 sm:text-[10px] sm:tracking-[0.3em]">{item.title}</span>
                             </div>
                         </div>
                     ))}
-                    {/* Texto final */}
-                    <div className="flex-shrink-0 w-[60vw] flex flex-col justify-center final-text-trigger will-change-transform">
+                    <div className="final-text-trigger flex w-full max-w-[min(100%,28rem)] flex-shrink-0 flex-col justify-center px-1 pb-12 will-change-transform sm:max-w-[min(100%,34rem)] md:max-w-[min(100%,40rem)] md:px-4 md:pb-0">
                         <AnimatedText
-                            text="Nuestra historia está en el asfalto."
-                            highlightWords={["historia"]}
+                            text="Esto no es lifestyle de catálogo: es lo que filmamos cuando la ciudad sigue encendida."
+                            highlightWords={["catálogo"]}
                             variant="fall"
-                            className="text-[7vw] font-bold leading-none tracking-tighter"
-                            immediate={true} 
+                            className="text-[clamp(1.125rem,2.6vw,1.875rem)] font-bold leading-[1.2] tracking-tight sm:text-[clamp(1.2rem,2.4vw,2rem)] md:text-[clamp(1.25rem,2.1vw,2.125rem)]"
+                            immediate={true}
                         />
                     </div>
                 </div>
             </div>
 
-            <div className="h-screen flex items-center justify-center">
-                <p className="text-xs tracking-[0.5em] text-neutral-600 uppercase">FME — Made in Medellín — 2025</p>
+            <div className="relative flex min-h-[42vh] flex-col items-center justify-center gap-10 border-t border-[var(--border-gold-08)] px-4 py-16 md:min-h-[38vh] md:py-12">
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_90%_70%_at_50%_100%,rgb(var(--gold-rgb)/0.08),transparent_55%)]" aria-hidden />
+                <p className="relative text-center text-[9px] uppercase tracking-[0.35em] text-fme-cream-dim sm:text-xs sm:tracking-[0.5em]">
+                    FME · Marca de ropa · Medellín · 2026
+                </p>
+                <div className="relative flex max-w-2xl flex-col items-stretch gap-3 rounded-sm fme-cta-panel px-6 py-8 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-6 sm:px-10 sm:py-9">
+                    <a
+                        href="https://storefme.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="fme-focus-ring rounded-sm border border-[var(--border-gold-12)] bg-[rgb(var(--gold-rgb)/0.08)] px-5 py-2.5 text-center text-[10px] uppercase tracking-[0.28em] text-fme-gold transition-colors hover:border-fme-gold hover:bg-[rgb(var(--gold-rgb)/0.14)] hover:text-fme-cream sm:min-w-[11rem]"
+                    >
+                        Comprar piezas →
+                    </a>
+                    <Link
+                        to="/colecciones"
+                        className="fme-focus-ring rounded-sm border border-transparent px-5 py-2.5 text-center text-[10px] uppercase tracking-[0.28em] text-fme-cream-dim transition-colors hover:border-[var(--border-gold-10)] hover:text-fme-gold sm:min-w-[11rem]"
+                    >
+                        Ver lookbook FME →
+                    </Link>
+                    <Link
+                        to="/comunidad"
+                        className="fme-focus-ring rounded-sm border border-transparent px-5 py-2.5 text-center text-[10px] uppercase tracking-[0.28em] text-fme-cream-dim transition-colors hover:border-[var(--border-gold-10)] hover:text-fme-gold sm:min-w-[11rem]"
+                    >
+                        Comunidad en fotos →
+                    </Link>
+                </div>
             </div>
         </section>
     );

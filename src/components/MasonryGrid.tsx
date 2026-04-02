@@ -27,7 +27,7 @@ function Lightbox({ member, onClose }: LightboxProps) {
                 position: "fixed",
                 inset: 0,
                 zIndex: 800,
-                background: "rgba(10,10,10,0.95)",
+                background: "var(--overlay-modal)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -62,7 +62,7 @@ function Lightbox({ member, onClose }: LightboxProps) {
                             {member.collection}
                         </p>
                     </div>
-                    <span style={{ fontSize: "11px", color: "rgba(232,224,208,.35)", letterSpacing: ".1em" }}>
+                    <span style={{ fontSize: "11px", color: "var(--text-cream-ghost)", letterSpacing: ".1em" }}>
                         {member.date}
                     </span>
                 </div>
@@ -76,7 +76,7 @@ function Lightbox({ member, onClose }: LightboxProps) {
                         right: 0,
                         background: "none",
                         border: "none",
-                        color: "rgba(232,224,208,.5)",
+                        color: "var(--foreground-soft)",
                         fontSize: "11px",
                         letterSpacing: ".2em",
                         textTransform: "uppercase",
@@ -84,7 +84,7 @@ function Lightbox({ member, onClose }: LightboxProps) {
                         transition: "color .2s",
                     }}
                     onMouseEnter={(e) => (e.currentTarget.style.color = "var(--cream)")}
-                    onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(232,224,208,.5)")}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = "var(--foreground-soft)")}
                 >
                     Cerrar ×
                 </button>
@@ -117,7 +117,7 @@ function MasonryCard({ member, index, onClick }: CardProps) {
                 position: "relative",
                 overflow: "hidden",
                 cursor: "zoom-in",
-                background: "#111",
+                background: "var(--surface-masonry)",
                 display: "block",
             }}
         >
@@ -130,7 +130,7 @@ function MasonryCard({ member, index, onClick }: CardProps) {
                 fontFamily: "var(--font-display)",
                 fontSize: "10px",
                 letterSpacing: ".15em",
-                color: "rgba(232,224,208,.25)",
+                color: "var(--text-cream-soft)",
             }}>
                 {String(index + 1).padStart(2, "0")}
             </span>
@@ -156,14 +156,14 @@ function MasonryCard({ member, index, onClick }: CardProps) {
                 <div style={{
                     width: "100%",
                     aspectRatio: member.ratio,
-                    background: "#141414",
+                    background: "var(--surface-card)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     transition: "transform .6s cubic-bezier(.25,.46,.45,.94)",
                     transform: hovered ? "scale(1.04)" : "scale(1)",
                 }}>
-                    <span style={{ fontFamily: "var(--font-display)", fontSize: "40px", color: "rgba(232,224,208,.04)" }}>
+                    <span style={{ fontFamily: "var(--font-display)", fontSize: "40px", color: "var(--text-cream-whisper)" }}>
                         F M E
                     </span>
                 </div>
@@ -173,7 +173,7 @@ function MasonryCard({ member, index, onClick }: CardProps) {
             <div style={{
                 position: "absolute",
                 inset: 0,
-                background: "linear-gradient(to top, rgba(10,10,10,.88) 0%, rgba(10,10,10,.1) 50%, transparent 100%)",
+                background: "linear-gradient(to top, rgb(var(--black-rgb) / 0.88) 0%, rgb(var(--black-rgb) / 0.1) 50%, transparent 100%)",
                 opacity: hovered ? 1 : 0,
                 transition: "opacity .4s",
                 display: "flex",
@@ -188,7 +188,7 @@ function MasonryCard({ member, index, onClick }: CardProps) {
                     <span style={{ fontSize: "9px", letterSpacing: ".2em", textTransform: "uppercase", color: "var(--gold)" }}>
                         {member.collection}
                     </span>
-                    <span style={{ fontSize: "9px", color: "rgba(232,224,208,.4)", letterSpacing: ".1em" }}>
+                    <span style={{ fontSize: "9px", color: "var(--text-cream-ghost)", letterSpacing: ".1em" }}>
                         {member.date}
                     </span>
                 </div>

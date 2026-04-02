@@ -199,7 +199,7 @@ export default function AnimatedText({
                 const isMatch = highlightWords.some(h => h.toLowerCase() === cleanWord);
 
                 if (isMatch) {
-                    wordElement.classList.add("text-[gold]", "italic");
+                    wordElement.classList.add("text-fme-gold", "italic");
                 }
             });
         }
@@ -223,11 +223,14 @@ export default function AnimatedText({
         return () => split.revert();
     }, { scope: ref, dependencies: [text, highlightWords] });
 
+    /* "reveal" usa clip-path en líneas; el resto (p. ej. fall con rotateX) necesita overflow visible para no cortar la animación */
+    const overflowStyle = variant === "reveal" ? "hidden" : "visible";
+
     return (
         <Tag
             ref={ref as React.RefObject<any>}
             className={className}
-            style={{ overflow: "hidden" }}
+            style={{ overflow: overflowStyle as "hidden" | "visible" }}
         >
             {text}
         </Tag>

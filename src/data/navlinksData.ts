@@ -5,6 +5,7 @@ export interface NavLink {
 
 export const NAV_LINKS: NavLink[] = [
     { label: "Colecciones", path: "/colecciones" },
+    { label: "Showcase", path: "/showcase" },
     { label: "Barrio", path: "/barrio" },
     { label: "Comunidad", path: "/comunidad" },
     { label: "Multimarca", path: "/multimarca" },
