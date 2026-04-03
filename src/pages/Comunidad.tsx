@@ -47,7 +47,7 @@ function ComunidadHeader() {
                 <h1 className="ch-title fme-font-display text-[clamp(52px,11vw,118px)] font-bold leading-[0.88] tracking-tight text-fme-cream">
                     COMUNI
                     <br />
-                    <span className="text-transparent [text-shadow:none] [-webkit-text-stroke:1px_var(--text-cream-stroke)]">
+                    <span className="text-transparent [text-shadow:none] [-webkit-text-stroke:1px_var(--gold)]">
                         DAD
                     </span>
                 </h1>

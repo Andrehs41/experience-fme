@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useId } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { gsap } from "../lib/gsap";
 import { useGSAP } from "@gsap/react";
@@ -11,9 +11,8 @@ function ActiveIndicator({ active }: { active: boolean }) {
   return (
     <span
       aria-hidden
-      className={`pointer-events-none absolute bottom-0 left-7 right-7 h-px origin-left bg-fme-gold transition-transform duration-300 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] ${
-        active ? "scale-x-100" : "scale-x-0"
-      }`}
+      className={`pointer-events-none absolute bottom-0 left-7 right-7 h-px origin-left bg-fme-gold transition-transform duration-300 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] ${active ? "scale-x-100" : "scale-x-0"
+        }`}
     />
   );
 }
@@ -22,15 +21,13 @@ function BurgerIcon({ isOpen }: { isOpen: boolean }) {
   return (
     <span className="flex h-[13px] w-[22px] flex-col justify-between" aria-hidden>
       <span
-        className={`block h-px w-full origin-center bg-fme-cream transition-transform duration-300 ease-out ${
-          isOpen ? "translate-y-[6px] rotate-45" : ""
-        }`}
+        className={`block h-px w-full origin-center bg-fme-cream transition-transform duration-300 ease-out ${isOpen ? "translate-y-[6px] rotate-45" : ""
+          }`}
       />
       <span className={`block h-px w-full bg-fme-cream transition-opacity duration-300 ${isOpen ? "opacity-0" : "opacity-100"}`} />
       <span
-        className={`block h-px w-full origin-center bg-fme-cream transition-transform duration-300 ease-out ${
-          isOpen ? "-translate-y-[6px] -rotate-45" : ""
-        }`}
+        className={`block h-px w-full origin-center bg-fme-cream transition-transform duration-300 ease-out ${isOpen ? "-translate-y-[6px] -rotate-45" : ""
+          }`}
       />
     </span>
   );
@@ -44,145 +41,112 @@ export default function Navbar() {
   const [hidden, setHidden] = useState(false);
   const lastScrollY = useRef(0);
   const { pathname } = useLocation();
-  const isHome = pathname === "/";
-  const mobileNavId = useId();
 
-  const showGlass = scrolled || isOpen;
-  const compact = scrolled;
-
-  useGSAP(
-    () => {
-      gsap.fromTo(
-        navRef.current,
-        { y: -100, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 1.2,
-          ease: "power4.out",
-          delay: isHome ? 3.6 : 0.3,
-          clearProps: "transform,opacity",
-        }
-      );
-    },
-    { dependencies: [isHome] }
-  );
-
-  useGSAP(
-    () => {
-      const root = mobileOverlayRef.current;
-      if (!root || !isOpen) return;
-
-      const reduced =
-        typeof window !== "undefined" &&
-        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-      const links = root.querySelectorAll<HTMLElement>(".mobile-nav-link");
-      const footer = root.querySelector<HTMLElement>(".mobile-nav-footer");
-      if (reduced) {
-        gsap.set(links, { clearProps: "all" });
-        if (footer) gsap.set(footer, { clearProps: "all" });
-        return;
+  // Animación de entrada inicial
+  useGSAP(() => {
+    gsap.fromTo(
+      navRef.current,
+      { y: -100, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 1.2,
+        ease: "power4.out",
+        delay: 0.1,
+        clearProps: "all",
       }
+    );
+  }, []);
 
-      gsap.fromTo(
-        links,
-        { y: 44, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          stagger: 0.055,
-          duration: 0.45,
-          ease: "power3.out",
-          overwrite: "auto",
-        }
-      );
-      if (footer) {
-        gsap.fromTo(
-          footer,
-          { y: 24, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.4, ease: "power3.out", delay: 0.12, overwrite: "auto" }
-        );
+  // Animación de links en el menú móvil
+  useGSAP(() => {
+    const root = mobileOverlayRef.current;
+    if (!root || !isOpen) return;
+
+    const links = root.querySelectorAll<HTMLElement>(".mobile-nav-link");
+    const footer = root.querySelector<HTMLElement>(".mobile-nav-footer");
+
+    gsap.fromTo(
+      links,
+      { y: 30, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        stagger: 0.07,
+        duration: 0.5,
+        ease: "power2.out",
+        overwrite: "auto",
       }
-    },
-    { dependencies: [isOpen] }
-  );
+    );
+    if (footer) {
+      gsap.fromTo(
+        footer,
+        { y: 20, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.4, delay: 0.2, ease: "power2.out" }
+      );
+    }
+  }, { dependencies: [isOpen] });
 
+  // Manejo de Scroll
   useEffect(() => {
     const onScroll = () => {
       const y = window.scrollY;
       const goingDown = y > lastScrollY.current;
-      setScrolled(y > 48);
-      if (y > 120 && goingDown) setHidden(true);
+      setScrolled(y > 20);
+      if (y > 150 && goingDown) setHidden(true);
       else if (!goingDown) setHidden(false);
+      lastScrollY.current = y;
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => {
-    setIsOpen(false);
-  }, [pathname]);
-
+  // Bloquear scroll del body al abrir menú
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
+    return () => { document.body.style.overflow = ""; };
   }, [isOpen]);
 
-  useEffect(() => {
-    if (!isOpen) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsOpen(false);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [isOpen]);
+  // Cerrar al cambiar de ruta
+  useEffect(() => { setIsOpen(false); }, [pathname]);
 
   return (
     <>
       <header
         ref={navRef}
-        className={`fixed inset-x-0 top-0 z-[400] pt-[env(safe-area-inset-top,0px)] transition-[transform,background-color,backdrop-filter] duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] ${
-          hidden && !isOpen ? "-translate-y-full" : "translate-y-0"
-        } ${showGlass ? "fme-nav-surface" : "bg-transparent"}`}
-      >
-        <div
-          className={`h-px bg-gradient-to-r from-transparent via-fme-gold to-transparent transition-opacity duration-500 ${
-            scrolled ? "opacity-60" : "opacity-[0.12]"
+        className={`fixed inset-x-0 top-0 z-[400] pt-[env(safe-area-inset-top,0px)] transition-[transform,background-color,backdrop-filter] duration-500 ease-in-out 
+          ${hidden && !isOpen ? "-translate-y-full" : "translate-y-0"} 
+          ${isOpen
+            ? "bg-fme-black/95 backdrop-blur-xl" 
+            : scrolled
+              ? "fme-nav-surface bg-fme-black/80 backdrop-blur-md"
+              : "bg-transparent" 
           }`}
-        />
+      >
+        {/* Línea decorativa superior */}
+        <div className={`h-px bg-gradient-to-r from-transparent via-fme-gold/40 to-transparent transition-opacity duration-700 ${scrolled || isOpen ? "opacity-100" : "opacity-0"}`} />
 
-        <div className={`flex min-h-[var(--nav-height)] items-stretch border-b ${BR}`}>
+        <div className={`flex min-h-[var(--nav-height)] items-stretch border-b ${BR} transition-all duration-300`}>
           {/* Logo */}
-          <div
-            className={`flex items-center border-r ${BR} transition-[padding] duration-300 ${
-              compact ? "px-6 py-3 md:px-8 md:py-3" : "px-5 py-4 md:px-10 md:py-5"
-            }`}
-          >
+          <div className={`flex items-center border-r ${BR} px-6 transition-[padding] duration-300 ${scrolled ? "md:px-8 py-2" : "md:px-10 py-4"}`}>
             <Link
               to="/"
-              className="fme-focus-ring fme-font-display text-[24px] tracking-[0.18em] text-fme-cream transition-colors duration-300 hover:text-fme-gold md:text-[26px]"
+              className="fme-font-display text-[22px] tracking-[0.2em] text-fme-cream hover:text-fme-gold transition-colors duration-300 md:text-[24px]"
             >
               FME
             </Link>
           </div>
 
-          {/* Desktop nav */}
-          <nav
-            className="relative hidden flex-1 items-stretch justify-center md:flex"
-            aria-label="Principal"
-          >
+          {/* Desktop Navigation */}
+          <nav className="relative hidden flex-1 items-stretch justify-center md:flex" aria-label="Principal">
             {NAV_LINKS.map(({ label, path }) => {
               const active = pathname === path;
               return (
                 <div key={path} className={`relative flex items-stretch border-r ${BR_SM}`}>
                   <Link
                     to={path}
-                    className={`fme-focus-ring flex items-center px-7 py-1 text-[10px] uppercase tracking-[0.22em] transition-colors duration-300 ${
-                      active ? "text-fme-cream" : "text-fme-cream-dim hover:text-fme-cream"
-                    }`}
+                    className={`flex items-center px-8 text-[10px] uppercase tracking-[0.25em] transition-colors duration-300 ${active ? "text-fme-cream" : "text-fme-cream-dim hover:text-fme-cream"
+                      }`}
                   >
                     {label}
                   </Link>
@@ -192,31 +156,25 @@ export default function Navbar() {
             })}
           </nav>
 
-          {/* Tienda desktop */}
-          <div
-            className={`hidden items-stretch border-l ${BR} transition-[padding] duration-300 md:flex ${
-              compact ? "px-5" : "px-8 lg:px-10"
-            }`}
-          >
+          {/* Tienda Desktop */}
+          <div className={`hidden items-stretch border-l ${BR} px-6 md:flex lg:px-10`}>
             <a
               href="https://storefme.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="fme-focus-ring fme-font-display my-auto inline-flex items-center rounded-sm bg-fme-cream px-5 py-2 text-[10px] uppercase tracking-[0.22em] text-fme-black shadow-[0_1px_0_0_var(--border-gold-10)] transition-all duration-300 hover:bg-fme-gold hover:shadow-[0_0_0_1px_var(--border-gold-18)] sm:text-[11px]"
+              className="my-auto rounded-sm bg-fme-cream px-6 py-2.5 text-[10px] font-bold uppercase tracking-[0.2em] text-fme-black transition-all duration-300 hover:bg-fme-gold"
             >
               TIENDA →
             </a>
           </div>
 
-          {/* Burger */}
+          {/* Botón Burger (Móvil) */}
           <div className={`ml-auto flex items-stretch border-l ${BR} md:hidden`}>
             <button
               type="button"
-              className="fme-focus-ring flex items-center px-5 py-3"
-              aria-expanded={isOpen ? "true" : "false"}
-              aria-controls={mobileNavId}
+              className="flex items-center px-6 py-3 focus:outline-none"
+              onClick={() => setIsOpen(!isOpen)}
               aria-label={isOpen ? "Cerrar menú" : "Abrir menú"}
-              onClick={() => setIsOpen((v) => !v)}
             >
               <BurgerIcon isOpen={isOpen} />
             </button>
@@ -224,48 +182,40 @@ export default function Navbar() {
         </div>
       </header>
 
-      {/* Overlay móvil */}
+      {/* Overlay Móvil */}
       <div
         ref={mobileOverlayRef}
-        id={mobileNavId}
-        className={`fixed inset-0 z-[380] flex flex-col bg-[radial-gradient(ellipse_130%_70%_at_50%_-15%,rgb(var(--gold-rgb)/0.14),transparent_50%),var(--black)] pt-[calc(var(--nav-height)+env(safe-area-inset-top,0px))] transition-[opacity,visibility] duration-500 ease-out md:hidden ${
-          isOpen ? "pointer-events-auto opacity-100 visible" : "pointer-events-none invisible opacity-0"
-        }`}
-        aria-hidden={isOpen ? "false" : "true"}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Menú de navegación"
+        className={`fixed inset-0 z-[380] flex flex-col bg-fme-black transition-all duration-500 ease-in-out md:hidden ${isOpen ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"
+          }`}
       >
-        <nav className="flex flex-1 flex-col justify-center px-2" aria-label="Móvil">
+        <div className="h-[var(--nav-height)]" />
+
+        <nav className="flex flex-1 flex-col justify-center gap-2 px-4" aria-label="Móvil">
           {NAV_LINKS.map(({ label, path }) => {
             const active = pathname === path;
             return (
               <Link
                 key={path}
                 to={path}
-                className={`mobile-nav-link fme-focus-ring fme-font-display border-b border-[var(--border-cream-06)] py-5 text-center text-[clamp(2rem,10vw,3.75rem)] leading-none tracking-[0.02em] transition-colors duration-300 ${
-                  active ? "text-fme-gold" : "text-fme-cream hover:text-fme-gold"
-                }`}
+                className={`mobile-nav-link border-b border-white/5 py-6 text-center text-[10vw] font-black uppercase italic leading-none tracking-tighter transition-colors duration-300 ${active ? "text-fme-gold" : "text-fme-cream"
+                  }`}
                 onClick={() => setIsOpen(false)}
               >
-                {label.toUpperCase()}
+                {label}
               </Link>
             );
           })}
         </nav>
 
-        <div className="mobile-nav-footer flex flex-col items-center gap-8 px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+        <div className="mobile-nav-footer flex flex-col items-center gap-6 px-6 pb-12">
           <a
             href="https://storefme.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="fme-focus-ring fme-font-display w-full max-w-sm rounded-sm border border-[var(--border-gold-12)] bg-fme-cream py-3.5 text-center text-[11px] uppercase tracking-[0.28em] text-fme-black transition-colors duration-300 hover:bg-fme-gold"
-            onClick={() => setIsOpen(false)}
+            className="w-full rounded-sm bg-fme-gold py-4 text-center text-[11px] font-bold uppercase tracking-[0.3em] text-fme-black"
           >
             Ir a la tienda
           </a>
-          <p className="text-[9px] uppercase tracking-[0.35em] text-[var(--text-cream-faint)]">
-            FME · Medellín
+          <p className="text-[9px] uppercase tracking-[0.4em] text-white/30">
+            FME — Medellín — 2026
           </p>
         </div>
       </div>

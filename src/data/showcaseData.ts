@@ -12,7 +12,7 @@ export interface ShowcasePiece {
 export const SHOWCASE_PIECES: ShowcasePiece[] = [
     {
         id: 1,
-        src: "/images/barrio-3.jpeg",
+        src: "/images/barrio/barrio-3.jpeg",
         title: "Silueta core",
         lookCode: "FW26 · 01",
         detail: "Corte limpio · uso diario",
@@ -20,7 +20,7 @@ export const SHOWCASE_PIECES: ShowcasePiece[] = [
     },
     {
         id: 2,
-        src: "/images/barrio-1.jpeg",
+        src: "/images/barrio/tienda-1.jpeg",
         title: "Capa calle",
         lookCode: "FW26 · 02",
         detail: "Textura · volumen controlado",
@@ -28,7 +28,7 @@ export const SHOWCASE_PIECES: ShowcasePiece[] = [
     },
     {
         id: 3,
-        src: "/images/barrio-5.jpeg",
+        src: "/images/barrio/barrio-5.jpeg",
         title: "Noche barrio",
         lookCode: "FW26 · 03",
         detail: "Contraste · actitud",
@@ -36,7 +36,7 @@ export const SHOWCASE_PIECES: ShowcasePiece[] = [
     },
     {
         id: 4,
-        src: "/images/barrio-2.jpeg",
+        src: "/images/barrio/barrio-7.jpeg",
         title: "Horizonte urbano",
         lookCode: "FW26 · 04",
         detail: "Editorial · contexto real",
@@ -44,7 +44,7 @@ export const SHOWCASE_PIECES: ShowcasePiece[] = [
     },
     {
         id: 5,
-        src: "/images/barrio-4.jpeg",
+        src: "/images/barrio/tienda-3.jpeg",
         title: "Archivo vivo",
         lookCode: "FW26 · 05",
         detail: "Piezas que vuelven por demanda",

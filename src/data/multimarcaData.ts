@@ -11,6 +11,7 @@ export interface Facet {
 }
 
 export interface Brand {
+    external: any;
     id: number;
     name: string;
     desc: string;
@@ -49,17 +50,29 @@ export const BRANDS: Brand[] = [
         name: "Marca 01",
         desc: "Descripción breve de la marca.",
         href: "https://storefme.com/marca-01",
+        logo: "/images/barrio/tienda-1.jpeg",
+        external: false
     },
     {
         id: 2,
         name: "Marca 02",
         desc: "Descripción breve de la marca.",
         href: "https://storefme.com/marca-02",
+        external: true
     },
     {
         id: 3,
         name: "Marca 03",
         desc: "Descripción breve de la marca.",
         href: "https://storefme.com/marca-03",
+        external: false
+    },
+    { 
+        id: 4,
+        name: "Marca 04",
+        desc: "Descripción breve de la marca.",
+        href: "https://storefme.com/marca-04",
+        logo: "/images/barrio/tienda-4.jpeg",
+        external: false
     },
 ];

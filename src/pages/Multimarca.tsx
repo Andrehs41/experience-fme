@@ -1,411 +1,274 @@
-// src/pages/Multimarca.tsx
-import { useRef, useState } from "react";
+import { useRef, useState, useMemo } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "../lib/gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { FACETS, BRANDS } from "../data/multimarcaData";
 import type { Facet } from "../data/multimarcaData";
 
-// Tipos
+gsap.registerPlugin(ScrollTrigger);
+
 type HoveredSide = "fme" | "multimarca" | null;
 
-// Nodo central divisor 
 function DividerNode({ hovered }: { hovered: HoveredSide }) {
     return (
-        <div
-            style={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                width: "48px",
-                height: "48px",
-                borderRadius: "50%",
-                border: "1px solid var(--border-cream-15)",
-                background: "var(--black)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                zIndex: 11,
-                transition: "border-color 0.4s, transform 0.4s",
-                ...(hovered ? { borderColor: "var(--border-cream-30)", transform: "translate(-50%, -50%) scale(1.1)" } : {}),
-            }}
-        >
-            <span style={{
-                fontFamily: "var(--font-display)",
-                fontSize: "10px",
-                letterSpacing: ".1em",
-                color: hovered ? "var(--cream-dim)" : "var(--text-cream-soft)",
-                transition: "color 0.3s",
-            }}>
+        <div className={`
+            absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+            w-12 h-12 rounded-full border bg-black flex items-center justify-center z-20
+            transition-all duration-500 ease-out
+            ${hovered ? "border-fme-gold/40 scale-110 shadow-[0_0_20px_rgba(201,168,76,0.15)]" : "border-white/10"}
+        `}>
+            <span className={`
+                fme-font-display text-[10px] tracking-widest transition-colors duration-300
+                ${hovered ? "text-fme-gold" : "text-fme-cream/40"}
+            `}>
                 VS
             </span>
         </div>
     );
 }
 
-// Un lado del split
-interface SideProps {
-    facet: Facet;
-    hovered: HoveredSide;
-    isLeft: boolean;
-    onHover: (id: HoveredSide) => void;
-}
-
-function SplitSide({ facet, hovered, isLeft, onHover }: SideProps) {
-    const isFme = facet.id === "fme";
+function SplitSide({ facet, hovered, isLeft, onHover }: {
+    facet: Facet; hovered: HoveredSide; isLeft: boolean; onHover: (id: HoveredSide) => void
+}) {
     const isHovered = hovered === facet.id;
     const isOpposite = hovered !== null && hovered !== facet.id;
 
-    const flex = isHovered ? 1.65 : isOpposite ? 0.35 : 1;
-
-    const handleClick = () => {
-        if (facet.external) {
-            window.open(facet.href, "_blank", "noopener noreferrer");
-        } else {
-            window.location.href = facet.href;
-        }
-    };
+    const flexStyle = useMemo(() => ({
+        flex: isHovered ? 1.6 : isOpposite ? 0.4 : 1
+    }), [isHovered, isOpposite]);
 
     return (
         <div
             onMouseEnter={() => onHover(facet.id)}
             onMouseLeave={() => onHover(null)}
-            onClick={handleClick}
-            className="min-h-[100dvh] flex-1 md:min-h-0"
-            style={{
-                flex,
-                position: "relative",
-                overflow: "hidden",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "flex-end",
-                padding: "clamp(28px,6vw,60px) clamp(20px,4vw,48px)",
-                cursor: "pointer",
-                transition: "flex 0.7s cubic-bezier(0.77,0,0.18,1)",
-                background: isFme ? "var(--black)" : "var(--surface-warm)",
-            }}
+            onClick={() => facet.external ? window.open(facet.href, "_blank") : window.location.href = facet.href}
+            style={flexStyle}
+            className={`
+                relative overflow-hidden flex flex-col justify-end
+                p-8 md:p-14 min-h-[50dvh] md:min-h-0 md:h-full
+                transition-[flex] duration-700 cubic-bezier(0.7,0,0.3,1)
+                ${facet.id === 'fme' ? "bg-black" : "bg-[#141412]"}
+            `}
         >
-            {/* Glow de fondo */}
-            <div style={{
-                position: "absolute",
-                inset: 0,
-                background: isFme
-                    ? "var(--gradient-glow-fme)"
-                    : "var(--gradient-glow-gold)",
-                opacity: isHovered ? 1 : 0,
-                transition: "opacity 0.5s",
-                pointerEvents: "none",
-            }} />
+            {/* Background Glow */}
+            <div className={`
+                absolute inset-0 pointer-events-none transition-opacity duration-700
+                ${isHovered ? "opacity-100" : "opacity-0 md:opacity-0"}
+                ${facet.id === 'fme' ? "bg-[radial-gradient(circle_at_center,rgba(232,224,208,0.08)_0%,transparent_70%)]" : "bg-[radial-gradient(circle_at_center,rgba(201,168,76,0.1)_0%,transparent_70%)]"}
+            `} />
 
-            {/* Número gigante de fondo */}
-            <span style={{
-                position: "absolute",
-                bottom: "-20px",
-                ...(isLeft ? { right: "-40px" } : { left: "-40px" }),
-                fontFamily: "var(--font-display)",
-                fontSize: "35vw",
-                lineHeight: 1,
-                color: "var(--text-cream-whisper)",
-                pointerEvents: "none",
-                userSelect: "none",
-                letterSpacing: "-.02em",
-                transition: "transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94)",
-                transform: isHovered ? "scale(1.04)" : "scale(1)",
-            }}>
-                {isFme ? "F" : "M"}
+            {/* Letra Gigante */}
+            <span className={`
+                absolute -bottom-10 fme-font-display text-[40vw] md:text-[35vw] leading-none select-none pointer-events-none opacity-[0.03] text-fme-cream transition-transform duration-1000
+                ${isLeft ? "-right-10" : "-left-10"}
+                ${isHovered ? "scale-110 translate-y-[-2%]" : "scale-100"}
+            `}>
+                {facet.id === 'fme' ? "F" : "M"}
             </span>
 
-            {/* Label superior */}
-            <div style={{
-                position: "absolute",
-                top: "clamp(72px,12vw,100px)",
-                ...(isLeft ? { left: "clamp(20px,4vw,48px)" } : { right: "clamp(20px,4vw,48px)" }),
-                zIndex: 5,
-                textAlign: isLeft ? "left" : "right",
-                transition: "opacity 0.4s",
-                opacity: isOpposite ? 0.3 : 1,
-            }}>
-                <p style={{
-                    fontFamily: "var(--font-display)",
-                    fontSize: "11px",
-                    letterSpacing: ".25em",
-                    color: "var(--text-cream-muted)",
-                    textTransform: "uppercase",
-                }}>
-                    {facet.topLabel}
-                </p>
-            </div>
-
-            {/* Contenido principal */}
-            <div style={{ position: "relative", zIndex: 5 }}>
-
-                {/* Tag */}
-                <div style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "10px",
-                    marginBottom: "20px",
-                    fontSize: "9px",
-                    letterSpacing: ".35em",
-                    textTransform: "uppercase",
-                    color: isFme ? "var(--text-cream-ghost)" : "var(--gold)",
-                    transition: "opacity 0.4s",
-                    opacity: isOpposite ? 0.4 : 1,
-                }}>
-                    <span style={{ width: "20px", height: "1px", background: "currentColor", display: "block", flexShrink: 0 }} />
-                    {facet.tag}
+            {/* Contenido */}
+            <div className={`relative z-10 transition-all duration-500 ${isOpposite ? "opacity-20 scale-[0.98] grayscale" : "opacity-100"}`}>
+                <div className="flex items-center gap-3 mb-4 md:mb-6">
+                    <span className={`h-px w-6 bg-current ${facet.id === 'fme' ? "text-fme-cream/30" : "text-fme-gold"}`} />
+                    <span className="text-[9px] tracking-[0.4em] uppercase text-fme-cream/50">{facet.tag}</span>
                 </div>
 
-                {/* Título */}
-                <h2 style={{
-                    fontFamily: "var(--font-display)",
-                    fontSize: isFme ? "clamp(48px,7vw,88px)" : "clamp(36px,5.5vw,68px)",
-                    lineHeight: .88,
-                    letterSpacing: "-.01em",
-                    transition: "opacity 0.4s, transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94)",
-                    opacity: isOpposite ? 0.25 : 1,
-                    transform: isHovered ? "translateY(-4px)" : "translateY(0)",
-                }}>
+                <h2 className="fme-font-display text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-fme-cream leading-[0.85] mb-6 md:mb-8">
                     {facet.title.map((line, i) => (
-                        <span key={i} style={{ display: "block", color: (!isFme && facet.titleAccent === i) ? "var(--gold)" : "var(--cream)" }}>
+                        <span key={i} className={`block ${(!isLeft && facet.titleAccent === i) ? "text-fme-gold" : ""}`}>
                             {line}
                         </span>
                     ))}
                 </h2>
 
-                {/* Descripción — aparece en hover */}
-                <p
-                    className="max-md:!translate-y-0 max-md:!opacity-100"
-                    style={{
-                    fontSize: "12px",
-                    lineHeight: 1.85,
-                    color: "var(--cream-dim)",
-                    fontWeight: 300,
-                    marginTop: "16px",
-                    maxWidth: "280px",
-                    opacity: isHovered ? 1 : 0,
-                    transform: isHovered ? "translateY(0)" : "translateY(12px)",
-                    transition: "opacity 0.4s 0.1s, transform 0.4s 0.1s",
-                }}
-                >
-                    {facet.desc}
-                </p>
-
-                <div
-                    className="max-md:!translate-y-0 max-md:!opacity-100"
-                    style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "10px",
-                    fontFamily: "var(--font-display)",
-                    fontSize: "11px",
-                    letterSpacing: ".2em",
-                    marginTop: "28px",
-                    padding: "10px 24px",
-                    background: isFme ? "var(--cream)" : "var(--gold)",
-                    color: "var(--black)",
-                    opacity: isHovered ? 1 : 0,
-                    transform: isHovered ? "translateY(0)" : "translateY(8px)",
-                    transition: "opacity 0.3s 0.2s, transform 0.3s 0.2s",
-                }}
-                >
-                    {facet.cta}
+                <div className={`
+                    overflow-hidden transition-all duration-500
+                    ${isHovered ? "max-h-60 opacity-100 translate-y-0" : "max-h-0 opacity-0 translate-y-4 md:max-h-60 md:opacity-0 max-md:max-h-60 max-md:opacity-100 max-md:translate-y-0"}
+                `}>
+                    <p className="text-fme-cream-dim text-xs leading-relaxed max-w-[260px] md:max-w-[300px] mb-6 md:mb-8">
+                        {facet.desc}
+                    </p>
+                    <button className={`
+                        px-8 py-3 fme-font-display text-[10px] tracking-widest uppercase transition-transform active:scale-95
+                        ${facet.id === 'fme' ? "bg-fme-cream text-black" : "bg-fme-gold text-black"}
+                    `}>
+                        {facet.cta}
+                    </button>
                 </div>
             </div>
         </div>
     );
 }
 
-// Sección de marcas (debajo del split) 
 function BrandsSection() {
-    const ref = useRef<HTMLElement>(null);
+    const sectionRef = useRef<HTMLElement>(null);
 
     useGSAP(() => {
-        gsap.from(".brand-item", {
-            y: 40,
+        const timeout = setTimeout(() => ScrollTrigger.refresh(), 500);
+
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: sectionRef.current,
+                start: "top 75%",
+                toggleActions: "play none none reverse",
+            }
+        });
+
+        tl.from(".brand-card-vault", {
+            y: 50,
             opacity: 0,
             stagger: 0.1,
-            duration: 0.8,
-            ease: "power3.out",
-            scrollTrigger: {
-                trigger: ref.current,
-                start: "top 80%",
-                toggleActions: "play none none reverse",
-            },
+            duration: 1,
+            ease: "power4.out"
         });
 
-        gsap.from(".brands-title", {
-            y: 30,
-            opacity: 0,
-            duration: 0.9,
-            ease: "power3.out",
+        // Parallax suave para el texto de fondo de la sección
+        gsap.to(".bg-archive-text", {
+            xPercent: -20,
             scrollTrigger: {
-                trigger: ref.current,
-                start: "top 85%",
-                toggleActions: "play none none reverse",
-            },
+                trigger: sectionRef.current,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: 1
+            }
         });
-    }, { scope: ref });
+
+        return () => clearTimeout(timeout);
+    }, { scope: sectionRef });
 
     return (
-        <section
-            ref={ref}
-            className="relative border-t border-[var(--border-gold-10)] bg-fme-surface-warm px-4 py-16 sm:px-6 sm:py-20 md:px-10 md:py-28"
-        >
-            <div
-                className="pointer-events-none absolute inset-0 opacity-[0.04] mix-blend-overlay [background-image:url('https://grainy-gradients.vercel.app/noise.svg')]"
-                aria-hidden
-            />
-            <div
-                className="pointer-events-none absolute left-1/2 top-0 h-[min(40vh,320px)] w-[min(100%,720px)] -translate-x-1/2 blur-3xl"
-                style={{ background: "radial-gradient(circle, rgb(var(--gold-rgb) / 0.07) 0%, transparent 65%)" }}
-                aria-hidden
-            />
+        <section ref={sectionRef} className="relative bg-[#080807] py-32 md:py-52 overflow-hidden">
 
-            {/* Header */}
-            <div className="brands-title relative z-[1] mb-14 max-w-4xl md:mb-20">
-                <div className="mb-4 flex items-center gap-3">
-                    <span className="h-px w-8 bg-fme-gold md:w-10" />
-                    <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-fme-gold">
-                        Catálogo multimarca
-                    </span>
-                </div>
-                <h2 className="fme-font-display text-[clamp(38px,6vw,72px)] font-bold leading-[0.92] text-fme-cream">
-                    LAS MARCAS
-                    <br />
-                    <span className="text-transparent [-webkit-text-stroke:1px_var(--text-cream-stroke)]">
-                        QUE CURÓ FME.
-                    </span>
-                </h2>
+            {/* Texto de fondo de la sección (Marca de agua ultra-sutil) */}
+            <div className="bg-archive-text absolute top-1/2 left-0 -translate-y-1/2 whitespace-nowrap pointer-events-none select-none">
+                <span className="fme-font-display text-[30vw] leading-none text-white/[0.01] fme-text-outline uppercase tracking-tighter">
+                    Selected Archive — Global Goods — FME Selection —
+                </span>
             </div>
 
-            {/* Grid de marcas */}
-            <div
-                className="relative z-[1] grid gap-px bg-[var(--border-cream-06)] shadow-[0_40px_100px_-48px_rgb(0_0_0/0.85)]"
-                style={{
-                    gridTemplateColumns: "repeat(auto-fill, minmax(min(100%,260px),1fr))",
-                }}
-            >
-                {BRANDS.map((brand) => (
-                    <a
-                        key={brand.id}
-                        href={brand.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="brand-item group block bg-fme-surface-warm p-9 transition-all duration-300 [text-decoration:none] hover:z-[2] hover:bg-fme-surface-warm-hover hover:shadow-[inset_0_0_0_1px_var(--border-gold-08)] sm:p-10 md:px-11"
-                        data-cursor={brand.name}
-                    >
-                        {/* Número */}
-                        <span style={{
-                            fontFamily: "var(--font-display)",
-                            fontSize: "10px",
-                            letterSpacing: ".15em",
-                            color: "var(--text-cream-muted)",
-                            display: "block",
-                            marginBottom: "24px",
-                        }}>
-                            {String(brand.id).padStart(2, "0")}
-                        </span>
+            {/* Grid Técnico de Fondo (Detalle de valor) */}
+            <div className="absolute inset-0 opacity-[0.02] pointer-events-none"
+                style={{ backgroundImage: `linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)`, backgroundSize: '60px 60px' }}
+            />
 
-                        {/* Logo o nombre */}
-                        {brand.logo ? (
-                            <img
-                                src={brand.logo}
-                                alt={brand.name}
-                                style={{ height: "32px", objectFit: "contain", marginBottom: "20px", filter: "brightness(0) invert(0.7)" }}
-                            />
-                        ) : (
-                            <p style={{
-                                fontFamily: "var(--font-display)",
-                                fontSize: "28px",
-                                letterSpacing: ".06em",
-                                color: "var(--cream)",
-                                marginBottom: "16px",
-                                lineHeight: 1,
-                            }}>
-                                {brand.name.toUpperCase()}
-                            </p>
-                        )}
+            <div className="relative z-10 px-6 max-w-[1400px] mx-auto">
+                <header className="mb-24">
+                    <div className="flex items-center gap-4 mb-6">
+                        <span className="w-2 h-2 rounded-full bg-fme-gold animate-pulse" />
+                        <span className="text-fme-gold text-[10px] tracking-[0.5em] uppercase font-medium">Verified Partners</span>
+                    </div>
+                    <h2 className="fme-font-display text-6xl md:text-9xl text-fme-cream leading-[0.8] mb-8">
+                        LAS <span className="text-fme-gold">MARCAS</span><br />
+                        <span className="opacity-20">QUE HABITAN </span><span className="text-fme-gold">FME.</span>
+                    </h2>
+                </header>
 
-                        <p style={{
-                            fontSize: "12px",
-                            lineHeight: 1.7,
-                            color: "var(--cream-dim)",
-                            fontWeight: 300,
-                        }}>
-                            {brand.desc}
-                        </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {BRANDS.map((brand) => {
+                        const hasLogo = !!brand.logo;
 
-                        {/* Indicador de link */}
-                        <span style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: "6px",
-                            marginTop: "20px",
-                            fontSize: "9px",
-                            letterSpacing: ".2em",
-                            textTransform: "uppercase",
-                            color: "var(--gold)",
-                        }}>
-                            Ver catálogo →
-                        </span>
-                    </a>
-                ))}
+                        return (
+                            <a
+                                key={brand.id}
+                                href={brand.href}
+                                target="_blank"
+                                rel="noopener"
+                                className="brand-card-vault group relative h-[450px] bg-[#0c0c0b] border border-white/5 rounded-sm p-8 flex flex-col justify-between transition-all duration-500 hover:border-fme-gold/30 hover:bg-[#11110f]"
+                            >
+                                {/* Overlay de Escaneo (Detalle industrial) */}
+                                <div className="absolute top-0 left-0 w-full h-[2px] bg-fme-gold/20 opacity-0 group-hover:opacity-100 group-hover:top-full transition-all duration-[1500ms] ease-in-out pointer-events-none" />
+
+                                <div className="relative z-10 flex flex-col h-full">
+                                    {/* Cabecera de Card: Estilo Etiqueta */}
+                                    <div className="flex justify-between items-start border-b border-white/5 pb-4 mb-8">
+                                        <span className="fme-font-display text-[9px] text-fme-cream/30 tracking-widest group-hover:text-fme-gold transition-colors">
+                                            REF_{String(brand.id).padStart(3, '0')}
+                                        </span>
+                                        <span className="text-[8px] text-fme-gold/50 font-mono tracking-tighter">
+                                            {brand.external ? "EXT_SOURCE" : "FME_VERIFIED"}
+                                        </span>
+                                    </div>
+
+                                    {/* --- COMBINACIÓN OPCIÓN 1 Y 3 --- */}
+                                    <div className="relative flex flex-col items-center justify-center flex-grow py-8 overflow-hidden">
+
+                                        {/* 1. SELLO DE AGUA (Opción 3 - Iniciales de fondo) */}
+                                        <span className="absolute fme-font-display text-[9rem] leading-none text-white/[0.02] select-none pointer-events-none tracking-tighter group-hover:text-fme-gold/[0.05] transition-colors">
+                                            {brand.name.substring(0, 2)}
+                                        </span>
+
+                                        {/* 2. LOGO GRANDE (Opción 1 - Protagonista visual) */}
+                                        {hasLogo ? (
+                                            <div className="relative z-10 w-24 h-24 md:w-28 md:h-28 rounded-full bg-black/60 border border-white/10 p-4 flex items-center justify-center transition-all duration-700 cubic-bezier(0.25,0.46,0.45,0.94) group-hover:scale-110 group-hover:border-fme-gold/30 group-hover:shadow-[0_0_50px_-5px_rgba(201,168,76,0.15)] shadow-2xl">
+                                                <img
+                                                    src={brand.logo}
+                                                    alt={brand.name}
+                                                    className="w-full h-full object-contain grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"
+                                                />
+                                            </div>
+                                        ) : (
+                                            <h3 className="relative z-10 fme-font-display text-5xl text-center text-fme-cream leading-none tracking-tighter group-hover:text-fme-gold transition-colors">
+                                                {brand.name}
+                                            </h3>
+                                        )}
+                                    </div>
+                                    {/* --------------------------------- */}
+
+                                    {/* Título Pequeño de Marca */}
+                                    <h3 className="fme-font-display text-sm text-center text-fme-cream tracking-tight uppercase group-hover:text-fme-gold transition-colors mb-6">
+                                        {brand.name}
+                                    </h3>
+
+                                    {/* Descripción */}
+                                    <p className="text-fme-cream-dim text-[11px] leading-relaxed mb-8 opacity-40 group-hover:opacity-100 transition-opacity">
+                                        {brand.desc}
+                                    </p>
+
+                                    {/* CTA */}
+                                    <div className="flex items-center justify-between mt-auto">
+                                        <span className="text-fme-gold text-[9px] tracking-widest uppercase font-bold">
+                                            Ver Catálogo
+                                        </span>
+                                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-fme-gold -rotate-45 group-hover:rotate-0 transition-transform duration-300">
+                                            <path d="M1 7H13M13 7L7 1M13 7L7 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
+                                    </div>
+                                </div>
+
+                                {/* Esquinas decorativas técnicas */}
+                                <div className="absolute top-0 right-0 w-4 h-4 border-t border-r border-white/10 group-hover:border-fme-gold/40 transition-colors" />
+                                <div className="absolute bottom-0 left-0 w-4 h-4 border-b border-l border-white/10 group-hover:border-fme-gold/40 transition-colors" />
+                            </a>
+                        );
+                    })}
+                </div>
             </div>
         </section>
     );
 }
 
-// Página principal
 export default function Multimarca() {
     const [hovered, setHovered] = useState<HoveredSide>(null);
-    const pageRef = useRef<HTMLDivElement>(null);
-
-    // Entrada de página
-    useGSAP(() => {
-        gsap.from(pageRef.current, {
-            opacity: 0,
-            duration: 0.6,
-            ease: "power2.out",
-        });
-    });
+    const containerRef = useRef<HTMLDivElement>(null);
 
     return (
-        <div ref={pageRef} className="relative min-h-dvh fme-page-vignette fme-noise-soft">
-            <header className="relative z-[25] border-b border-[var(--border-gold-08)] bg-gradient-to-b from-[rgb(var(--gold-rgb)/0.06)] to-transparent px-4 py-3.5 text-center md:py-4">
-                <p className="text-[9px] uppercase tracking-[0.42em] text-fme-cream-dim">
-                    FME Store · <span className="text-fme-gold">dos entradas</span>, un checkout
-                </p>
-            </header>
+        <div ref={containerRef} className="bg-black min-h-screen">
+            <nav className="fixed top-0 w-full z-[100] px-6 py-6 flex justify-between items-center mix-blend-difference">
+                <span className="fme-font-display text-fme-cream text-[10px] tracking-[0.4em] uppercase">
+                    FME <span className="text-fme-gold">Multi</span>brand
+                </span>
+            </nav>
 
-            {/* Split: apilado en móvil, lado a lado en desktop */}
-            <div className="relative flex min-h-[200dvh] flex-col md:h-screen md:min-h-0 md:flex-row">
-
+            <div className="relative flex flex-col md:flex-row h-[100dvh] md:h-screen w-full overflow-hidden">
                 {FACETS.map((facet, i) => (
-                    <SplitSide
-                        key={facet.id}
-                        facet={facet}
-                        hovered={hovered}
-                        isLeft={i === 0}
-                        onHover={setHovered}
-                    />
+                    <SplitSide key={facet.id} facet={facet} hovered={hovered} isLeft={i === 0} onHover={setHovered} />
                 ))}
 
-                <div className="pointer-events-none absolute inset-y-0 left-1/2 z-10 hidden w-px -translate-x-1/2 bg-[var(--border-cream-10)] md:block">
+                <div className="hidden md:block">
                     <DividerNode hovered={hovered} />
                 </div>
-
-                {!hovered && (
-                    <p
-                        className="pointer-events-none absolute left-1/2 z-20 -translate-x-1/2 rounded-full border border-[var(--border-gold-08)] bg-[rgb(var(--black-rgb)/0.55)] px-4 py-1.5 text-[8px] uppercase tracking-[0.28em] text-[var(--text-cream-muted)] backdrop-blur-sm sm:text-[9px]"
-                        style={{ bottom: "max(24px, env(safe-area-inset-bottom, 8px))" }}
-                    >
-                        Elegí un lado
-                    </p>
-                )}
             </div>
 
-            {/* Sección de marcas debajo */}
             <BrandsSection />
         </div>
     );
