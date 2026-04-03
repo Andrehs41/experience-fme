@@ -4,113 +4,124 @@ import { gsap, useGSAP } from "../../lib/gsap";
 
 type StatItem = {
     value: string;
+    numericValue?: number; // Para la animación de conteo
+    suffix?: string;
     label: string;
     href: string | null;
 };
 
 const STATS: StatItem[] = [
-    { value: "2018", label: "Primer corte con nombre FME", href: null },
-    { value: "∞", label: "Reposición cuando la gente pide más", href: "/colecciones" },
-    { value: "MDE", label: "Marca con base en la ciudad", href: "/barrio" },
-    { value: "1", label: "Tienda oficial: storefme.com", href: "https://storefme.com" },
+    { value: "2018", numericValue: 2018, label: "Origen del corte FME", href: "/" },
+    { value: "∞", label: "Reposición bajo demanda", href: "/colecciones" },
+    { value: "MDE", label: "Operación local Medellín", href: "/barrio" },
+    { value: "01", numericValue: 1, label: "Punto de venta oficial", href: "https://storefme.com" },
 ];
 
 export default function HomeStatsSection() {
     const sectionRef = useRef<HTMLElement>(null);
 
     useGSAP(() => {
-        gsap.from(".home-stat-item", {
-            y: 36,
-            opacity: 0,
-            duration: 0.85,
-            stagger: 0.12,
-            ease: "power3.out",
-            scrollTrigger: {
-                trigger: sectionRef.current,
-                start: "top 82%",
-                toggleActions: "play none none reverse",
-            },
+        const mm = gsap.matchMedia();
+        const items = gsap.utils.toArray(".home-stat-item");
+
+        mm.add("(min-width: 768px)", () => {
+            gsap.from(items, {
+                y: 40,
+                opacity: 0,
+                duration: 1,
+                stagger: 0.1,
+                ease: "expo.out",
+                scrollTrigger: {
+                    trigger: sectionRef.current,
+                    start: "top 85%",
+                    toggleActions: "play none none reverse",
+                },
+            });
+
+            // Animación para los números que tienen valor numérico
+            gsap.utils.toArray(".stat-number").forEach((num: any) => {
+                const target = parseInt(num.innerText);
+                if (isNaN(target)) return;
+
+                gsap.from(num, {
+                    innerText: 0,
+                    duration: 2,
+                    snap: { innerText: 1 },
+                    scrollTrigger: {
+                        trigger: num,
+                        start: "top 90%",
+                    },
+                });
+            });
         });
     }, { scope: sectionRef });
 
     return (
         <section
             ref={sectionRef}
-            className="relative border-y border-[var(--border-gold-08)] bg-fme-surface-ink py-16 shadow-[inset_0_1px_0_0_var(--border-gold-05)] fme-noise-soft sm:py-20 md:py-24"
+            className="relative border-y border-white/5 bg-fme-surface-ink py-20 sm:py-28"
         >
-            <div
-                className="pointer-events-none absolute inset-0 opacity-[0.035] mix-blend-overlay [background-image:url('https://grainy-gradients.vercel.app/noise.svg')]"
-                aria-hidden
-            />
+            {/* Ruido de fondo sutil */}
+            <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+
             <div className="relative z-[1] mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-                <div className="mb-10 flex flex-col gap-2 sm:mb-12 sm:flex-row sm:items-end sm:justify-between">
+                {/* Header de la sección */}
+                <div className="mb-12 flex items-center justify-between border-b border-white/5 pb-6">
                     <div className="flex items-center gap-3">
-                        <span className="h-px w-8 bg-fme-gold" />
-                        <span className="text-[10px] uppercase tracking-[0.32em] text-fme-gold">
-                            Datos rápidos
+                        <div className="h-1.5 w-1.5 rounded-full bg-fme-gold animate-pulse" />
+                        <span className="text-[10px] uppercase tracking-[0.4em] text-fme-gold font-bold">
+                            Datos Rápidos 
                         </span>
                     </div>
-                    <div className="flex flex-wrap gap-4 text-[10px] uppercase tracking-[0.22em]">
-                        <Link to="/colecciones" className="fme-focus-ring fme-link-cta">
-                            Colecciones →
-                        </Link>
-                        <a
-                            href="https://storefme.com"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="fme-focus-ring text-fme-gold transition-colors hover:text-fme-cream"
-                        >
-                            Tienda →
-                        </a>
+                    <div className="hidden sm:block text-[9px] uppercase tracking-widest text-fme-cream-dim/50">
+                        FME Ledger / 2025
                     </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 sm:gap-5 md:grid-cols-4 md:gap-4">
+                {/* Grid con estética de bordes finos */}
+                <div className="grid grid-cols-2 gap-px bg-white/5 md:grid-cols-4 overflow-hidden border border-white/5">
                     {STATS.map((s) => {
-                        const inner = (
-                            <>
-                                <p className="fme-font-display text-[clamp(2rem,8vw,3.25rem)] leading-none tracking-tight text-fme-cream">
-                                    {s.value}
-                                </p>
-                                <p className="mt-3 text-[10px] uppercase tracking-[0.28em] text-fme-cream-dim sm:text-[11px]">
-                                    {s.label}
-                                </p>
-                                {s.href && (
-                                    <span className="mt-4 inline-block text-[9px] uppercase tracking-[0.2em] text-fme-gold opacity-80 transition-opacity group-hover:opacity-100">
-                                        {s.href.startsWith("http") ? "Abrir →" : "Ver →"}
-                                    </span>
-                                )}
-                            </>
-                        );
+                        const content = (
+                            <div className="group relative bg-fme-surface-ink p-8 transition-all duration-500 hover:bg-neutral-900/50 sm:p-10">
+                                {/* Decoración de esquina */}
+                                <div className="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div className="h-1 w-1 bg-fme-gold/40" />
+                                </div>
 
-                        const cardClass =
-                            "home-stat-item group relative overflow-hidden rounded-sm border border-[var(--border-cream-08)] bg-[linear-gradient(160deg,rgb(var(--gold-rgb)/0.05)_0%,transparent_45%)] p-5 text-center transition-colors duration-300 hover:border-[var(--border-gold-12)] hover:bg-[rgb(var(--gold-rgb)/0.04)] sm:p-6 md:text-left";
+                                <div className="flex flex-col h-full">
+                                    <span className="stat-number fme-font-display text-[clamp(2.5rem,10vw,4rem)] font-bold leading-none tracking-tighter text-fme-cream group-hover:text-fme-gold transition-colors duration-500">
+                                        {s.value}
+                                    </span>
+
+                                    <h4 className="mt-6 text-[10px] font-bold uppercase tracking-[0.2em] text-fme-cream-dim group-hover:text-fme-cream transition-colors">
+                                        {s.label}
+                                    </h4>
+
+                                    {s.href && (
+                                        <div className="mt-8 flex items-center gap-2 text-[9px] uppercase tracking-widest text-fme-gold/60 group-hover:text-fme-gold transition-all">
+                                            <span className="h-px w-4 bg-fme-gold/40 group-hover:w-8 transition-all" />
+                                            {s.href.startsWith("http") ? "Source" : "Explorar"}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        );
 
                         if (s.href?.startsWith("http")) {
                             return (
-                                <a
-                                    key={s.value}
-                                    href={s.href}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className={`${cardClass} fme-focus-ring block`}
-                                >
-                                    {inner}
+                                <a key={s.value} href={s.href} target="_blank" rel="noopener noreferrer" className="block">
+                                    {content}
                                 </a>
                             );
                         }
                         if (s.href) {
                             return (
-                                <Link key={s.value} to={s.href} className={`${cardClass} fme-focus-ring block`}>
-                                    {inner}
+                                <Link key={s.value} to={s.href} className="block">
+                                    {content}
                                 </Link>
                             );
                         }
-                        return (
-                            <div key={s.value} className={cardClass}>
-                                {inner}
-                            </div>
-                        );
+                        return <div key={s.value}>{content}</div>;
                     })}
                 </div>
             </div>

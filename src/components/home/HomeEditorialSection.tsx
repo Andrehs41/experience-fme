@@ -34,7 +34,7 @@ export default function HomeEditorialSection() {
             <div className="relative z-[1] mx-auto grid max-w-6xl items-center gap-12 px-4 sm:gap-14 sm:px-6 md:grid-cols-2 md:gap-16 lg:px-8">
                 <div className="editorial-reveal relative aspect-[4/5] w-full overflow-hidden rounded-md ring-1 ring-[var(--border-gold-10)] ring-offset-4 ring-offset-fme-black sm:aspect-[3/4]">
                     <img
-                        src="/images/barrio-2.jpeg"
+                        src="/images/barrio/tienda-3.jpeg"
                         alt="FME en el barrio"
                         className="h-full w-full object-cover transition-transform duration-700 hover:scale-[1.02]"
                         loading="lazy"

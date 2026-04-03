@@ -3,11 +3,13 @@ import { Link } from "react-router-dom";
 import { gsap, ScrollTrigger, useGSAP } from "../../lib/gsap";
 
 const STRIP_IMAGES = [
-    { src: "/images/barrio-1.jpeg", alt: "FME look 1" },
-    { src: "/images/barrio-2.jpeg", alt: "FME look 2" },
-    { src: "/images/barrio-3.jpeg", alt: "FME look 3" },
-    { src: "/images/barrio-4.jpeg", alt: "FME look 4" },
-    { src: "/images/barrio-5.jpeg", alt: "FME look 5" },
+    { src: "/images/barrio/barrio-1.jpeg", alt: "FME look 1" },
+    { src: "/images/barrio/barrio-2.jpeg", alt: "FME look 2" },
+    { src: "/images/barrio/barrio-3.jpeg", alt: "FME look 3" },
+    { src: "/images/barrio/barrio-4.jpeg", alt: "FME look 4" },
+    { src: "/images/barrio/barrio-5.jpeg", alt: "FME look 5" },
+    { src: "/images/barrio/barrio-6.jpeg", alt: "FME look 6" },
+    { src: "/images/barrio/barrio-7.jpeg", alt: "FME look 7" },
 ];
 
 /**
@@ -123,7 +125,7 @@ export default function HomePinnedStrip() {
                         <span className="text-transparent [-webkit-text-stroke:1px_var(--gold)]">otro ritmo.</span>
                     </h2>
                     <p className="mt-4 max-w-md text-sm text-fme-cream-dim">
-                        Scroll horizontal atado al vertical: como un contact sheet que avanza solo.
+                        El ritmo de la ciudad no es el de las campañas.
                     </p>
                     <Link
                         to="/showcase"

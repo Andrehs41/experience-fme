@@ -3,113 +3,124 @@ import { Link } from "react-router-dom";
 import { gsap, useGSAP } from "../../lib/gsap";
 
 const STEPS = [
-    {
-        step: "01",
-        title: "Brief",
-        body: "Lo que sale a la calle empieza con escucha: qué falta, qué cansa, qué se repite.",
-    },
-    {
-        step: "02",
-        title: "Patronaje",
-        body: "Siluetas probadas en movimiento — no en render. Que el cuerpo mande.",
-    },
-    {
-        step: "03",
-        title: "Producción",
-        body: "Lotes acotados y controlados. Menos volumen, más criterio por metro de tela.",
-    },
-    {
-        step: "04",
-        title: "Canal",
-        body: "Tienda online y comunidad que devuelven foto, feedback y próximo ajuste.",
-    },
+    { step: "01", title: "Brief", body: "Lo que sale a la calle empieza con escucha: qué falta, qué cansa, qué se repite." },
+    { step: "02", title: "Patronaje", body: "Siluetas probadas en movimiento — no en render. Que el cuerpo mande." },
+    { step: "03", title: "Producción", body: "Lotes acotados y controlados. Menos volumen, más criterio por metro de tela." },
+    { step: "04", title: "Canal", body: "Tienda online y comunidad que devuelven foto, feedback y próximo ajuste." },
 ] as const;
 
 export default function HomeJourneySection() {
     const sectionRef = useRef<HTMLElement>(null);
 
     useGSAP(() => {
-        gsap.from(".journey-card", {
-            y: 40,
-            opacity: 0,
-            duration: 0.75,
-            stagger: 0.1,
-            ease: "power3.out",
-            scrollTrigger: {
-                trigger: sectionRef.current,
-                start: "top 80%",
-                toggleActions: "play none none reverse",
-            },
+        const cards = gsap.utils.toArray<HTMLElement>(".journey-card");
+
+        const mm = gsap.matchMedia();
+
+        mm.add("(min-width: 1024px)", () => {
+            cards.forEach((card, index) => {
+                const yOffset = index * 52; 
+
+                gsap.fromTo(card,
+                    { y: yOffset + 60, opacity: 0 },
+                    {
+                        y: yOffset,
+                        opacity: 1,
+                        duration: 1,
+                        delay: index * 0.1,
+                        ease: "power4.out",
+                        scrollTrigger: {
+                            trigger: card,
+                            start: "top 85%",
+                            toggleActions: "play none none reverse",
+                            invalidateOnRefresh: true,
+                        },
+                    }
+                );
+            });
         });
+
+        mm.add("(max-width: 1023px)", () => {
+            gsap.fromTo(cards,
+                { y: 40, opacity: 0 },
+                {
+                    y: 0,
+                    opacity: 1,
+                    duration: 0.8,
+                    stagger: 0.15,
+                    scrollTrigger: {
+                        trigger: sectionRef.current,
+                        start: "top 80%",
+                        toggleActions: "play none none reverse",
+                    }
+                }
+            );
+        });
+
+        return () => mm.revert();
     }, { scope: sectionRef });
 
     return (
         <section
             ref={sectionRef}
-            className="relative border-t border-[var(--border-gold-08)] bg-fme-surface-raised py-20 fme-noise-soft sm:py-24 md:py-28"
+            className="relative border-t border-[var(--border-gold-08)] bg-fme-surface-raised py-20 fme-noise-soft sm:py-24 md:py-32"
         >
-            <div
-                className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--border-gold-12)] to-transparent opacity-70"
-                aria-hidden
-            />
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--border-gold-12)] to-transparent opacity-70" />
 
             <div className="relative z-[1] mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-                <div className="mb-12 max-w-xl sm:mb-16 md:mb-20">
+                {/* Header */}
+                <div className="mb-16 max-w-xl sm:mb-20">
                     <div className="mb-4 flex items-center gap-3">
                         <span className="h-px w-10 bg-fme-gold" />
                         <span className="text-[10px] uppercase tracking-[0.35em] text-fme-gold">
                             Cómo laburamos
                         </span>
                     </div>
-                    <h2 className="fme-font-display text-[clamp(1.75rem,5vw,3rem)] leading-tight text-fme-cream">
-                        Del boceto al envío
+                    <h2 className="fme-font-display text-[clamp(2rem,5vw,3.5rem)] font-bold leading-[1.1] text-fme-cream uppercase">
+                        Del boceto <br className="hidden sm:block" /> al envío
                     </h2>
-                    <p className="mt-4 text-sm text-fme-cream-dim sm:text-[15px]">
-                        Cuatro etapas reales — nada de “filosofía de marca” sin producción detrás.
-                    </p>
                 </div>
 
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8 lg:pb-52">
                     {STEPS.map((item) => (
                         <article
                             key={item.step}
-                            className="journey-card group relative overflow-hidden rounded-sm border border-[var(--border-cream-08)] bg-[linear-gradient(165deg,rgb(var(--gold-rgb)/0.06)_0%,transparent_50%)] p-6 shadow-[inset_0_1px_0_0_var(--border-gold-05)] transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--border-gold-12)] hover:shadow-[0_20px_40px_-24px_rgb(0_0_0/0.5)] sm:p-7"
+                            className="journey-card group relative overflow-hidden rounded-sm border border-white/10 bg-neutral-900/40 p-6 transition-all duration-500 hover:z-10 hover:border-fme-gold/70 hover:bg-neutral-800/90 sm:p-8"
                         >
-                            <span className="fme-font-display text-[10px] tracking-[0.2em] text-fme-gold">{item.step}</span>
-                            <h3 className="mt-4 fme-font-display text-lg tracking-wide text-fme-cream sm:text-xl">
+                            <span className="fme-font-display text-[10px] tracking-[0.2em] text-fme-gold/80 font-bold">{item.step}</span>
+                            <h3 className="mt-4 fme-font-display text-lg tracking-wide text-white group-hover:text-fme-gold transition-colors uppercase font-bold sm:text-xl">
                                 {item.title}
                             </h3>
-                            <p className="mt-3 text-xs leading-relaxed text-fme-cream-dim sm:text-[13px]">{item.body}</p>
-                            <div className="mt-5 h-px w-8 bg-gradient-to-r from-fme-gold/50 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                            <p className="mt-3 text-xs leading-relaxed text-zinc-400 group-hover:text-zinc-100 transition-colors sm:text-[13px]">
+                                {item.body}
+                            </p>
+
+                            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-fme-gold/40 to-transparent opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
+                            <div className="absolute bottom-0 left-1/2 h-10 w-32 -translate-x-1/2 translate-y-full rounded-full bg-fme-gold/10 opacity-0 blur-xl transition-all duration-700 group-hover:translate-y-1/2 group-hover:opacity-100" />
                         </article>
                     ))}
                 </div>
 
-                <div className="mt-12 sm:mt-14">
-                    <div className="rounded-sm fme-cta-panel px-6 py-8 sm:px-8 sm:py-9">
-                        <p className="mb-5 text-[9px] uppercase tracking-[0.32em] text-fme-cream-dim">
-                            Conectá el recorrido
-                        </p>
-                        <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-6">
-                            <div className="flex flex-wrap gap-4 sm:gap-6">
-                                <Link to="/comunidad" className="fme-focus-ring fme-link-cta">
-                                    Comunidad →
-                                </Link>
-                                <Link to="/colecciones" className="fme-focus-ring fme-link-cta">
-                                    Lookbook →
-                                </Link>
-                                <Link to="/barrio" className="fme-focus-ring fme-link-cta">
-                                    El Barrio →
-                                </Link>
-                                <Link to="/multimarca" className="fme-focus-ring fme-link-cta">
-                                    Multimarca →
-                                </Link>
+                <div className="mt-16 sm:mt-24 lg:mt-32">
+                    <div className="rounded-sm border border-[var(--border-gold-08)] bg-black/20 backdrop-blur-sm px-6 py-10 sm:px-10 sm:py-12 shadow-2xl">
+                        <p className="mb-6 text-[10px] uppercase tracking-[0.4em] text-fme-gold font-medium">Conectá el recorrido</p>
+                        <div className="flex flex-col gap-8 sm:flex-row sm:items-center sm:justify-between">
+                            <div className="flex flex-wrap gap-x-8 gap-y-4">
+                                {["Comunidad", "Lookbook", "El Barrio", "Multimarca"].map((txt) => (
+                                    <Link
+                                        key={txt}
+                                        to={`/${txt.toLowerCase().replace(" ", "")}`}
+                                        className="fme-link-cta text-[11px] font-medium tracking-widest uppercase hover:text-fme-gold transition-colors"
+                                    >
+                                        {txt} →
+                                    </Link>
+                                ))}
                             </div>
                             <a
                                 href="https://storefme.com"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="fme-focus-ring inline-flex justify-center rounded-sm bg-fme-cream px-5 py-2.5 text-[10px] uppercase tracking-[0.22em] text-fme-black transition-colors hover:bg-fme-gold sm:shrink-0"
+                                className="inline-flex items-center justify-center rounded-sm bg-fme-cream px-8 py-3 text-[10px] font-bold uppercase tracking-[0.25em] text-fme-black hover:bg-fme-gold transition-all hover:scale-105 active:scale-95"
                             >
                                 Ir a la tienda →
                             </a>

@@ -107,7 +107,7 @@ export default function ManifestoSection() {
                         <p
                             className={`fme-font-display leading-[0.88] tracking-tight ${
                                 outline
-                                    ? "text-transparent [-webkit-text-stroke:1px_var(--text-cream-stroke)]"
+                                    ? "font-bold text-transparent [-webkit-text-stroke:1px_var(--gold)]"
                                     : "text-fme-cream"
                             }`}
                             style={{ fontSize: "clamp(2.5rem, 12vw, 160px)" }}

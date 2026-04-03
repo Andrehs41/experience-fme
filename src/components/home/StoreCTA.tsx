@@ -78,7 +78,7 @@ export default function StoreCTA() {
                 <h2 className="fme-font-display text-[clamp(2.25rem,8vw,110px)] leading-[0.9] tracking-tight text-fme-cream">
                     STOCK REAL.
                     <br />
-                    <span className="text-transparent [-webkit-text-stroke:1px_var(--gold)]">
+                    <span className="font-bold text-transparent [-webkit-text-stroke:1px_var(--gold)]">
                         ENVÍO A TODO EL PAÍS.
                     </span>
                 </h2>

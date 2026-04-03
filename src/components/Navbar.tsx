@@ -60,7 +60,7 @@ export default function Navbar() {
           opacity: 1,
           duration: 1.2,
           ease: "power4.out",
-          delay: isHome ? 3.6 : 0,
+          delay: isHome ? 3.6 : 0.3,
           clearProps: "transform,opacity",
         }
       );
@@ -237,7 +237,7 @@ export default function Navbar() {
         aria-label="Menú de navegación"
       >
         <nav className="flex flex-1 flex-col justify-center px-2" aria-label="Móvil">
-          {NAV_LINKS.map(({ label, path }, i) => {
+          {NAV_LINKS.map(({ label, path }) => {
             const active = pathname === path;
             return (
               <Link
