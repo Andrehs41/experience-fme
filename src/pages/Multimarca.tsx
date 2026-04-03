@@ -20,21 +20,21 @@ function DividerNode({ hovered }: { hovered: HoveredSide }) {
                 width: "48px",
                 height: "48px",
                 borderRadius: "50%",
-                border: "1px solid rgba(232,224,208,0.15)",
+                border: "1px solid var(--border-cream-15)",
                 background: "var(--black)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 zIndex: 11,
                 transition: "border-color 0.4s, transform 0.4s",
-                ...(hovered ? { borderColor: "rgba(232,224,208,0.3)", transform: "translate(-50%, -50%) scale(1.1)" } : {}),
+                ...(hovered ? { borderColor: "var(--border-cream-30)", transform: "translate(-50%, -50%) scale(1.1)" } : {}),
             }}
         >
             <span style={{
                 fontFamily: "var(--font-display)",
                 fontSize: "10px",
                 letterSpacing: ".1em",
-                color: hovered ? "var(--cream-dim)" : "rgba(232,224,208,0.25)",
+                color: hovered ? "var(--cream-dim)" : "var(--text-cream-soft)",
                 transition: "color 0.3s",
             }}>
                 VS
@@ -71,6 +71,7 @@ function SplitSide({ facet, hovered, isLeft, onHover }: SideProps) {
             onMouseEnter={() => onHover(facet.id)}
             onMouseLeave={() => onHover(null)}
             onClick={handleClick}
+            className="min-h-[100dvh] flex-1 md:min-h-0"
             style={{
                 flex,
                 position: "relative",
@@ -78,10 +79,10 @@ function SplitSide({ facet, hovered, isLeft, onHover }: SideProps) {
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "flex-end",
-                padding: "60px 48px",
+                padding: "clamp(28px,6vw,60px) clamp(20px,4vw,48px)",
                 cursor: "pointer",
                 transition: "flex 0.7s cubic-bezier(0.77,0,0.18,1)",
-                background: isFme ? "#0a0a0a" : "#0e0c08",
+                background: isFme ? "var(--black)" : "var(--surface-warm)",
             }}
         >
             {/* Glow de fondo */}
@@ -89,8 +90,8 @@ function SplitSide({ facet, hovered, isLeft, onHover }: SideProps) {
                 position: "absolute",
                 inset: 0,
                 background: isFme
-                    ? "radial-gradient(ellipse 60% 40% at 50% 70%, rgba(232,224,208,0.04) 0%, transparent 70%)"
-                    : "radial-gradient(ellipse 60% 40% at 50% 70%, rgba(201,168,76,0.06) 0%, transparent 70%)",
+                    ? "var(--gradient-glow-fme)"
+                    : "var(--gradient-glow-gold)",
                 opacity: isHovered ? 1 : 0,
                 transition: "opacity 0.5s",
                 pointerEvents: "none",
@@ -104,7 +105,7 @@ function SplitSide({ facet, hovered, isLeft, onHover }: SideProps) {
                 fontFamily: "var(--font-display)",
                 fontSize: "35vw",
                 lineHeight: 1,
-                color: "rgba(232,224,208,0.015)",
+                color: "var(--text-cream-whisper)",
                 pointerEvents: "none",
                 userSelect: "none",
                 letterSpacing: "-.02em",
@@ -117,8 +118,8 @@ function SplitSide({ facet, hovered, isLeft, onHover }: SideProps) {
             {/* Label superior */}
             <div style={{
                 position: "absolute",
-                top: "100px",
-                ...(isLeft ? { left: "48px" } : { right: "48px" }),
+                top: "clamp(72px,12vw,100px)",
+                ...(isLeft ? { left: "clamp(20px,4vw,48px)" } : { right: "clamp(20px,4vw,48px)" }),
                 zIndex: 5,
                 textAlign: isLeft ? "left" : "right",
                 transition: "opacity 0.4s",
@@ -128,7 +129,7 @@ function SplitSide({ facet, hovered, isLeft, onHover }: SideProps) {
                     fontFamily: "var(--font-display)",
                     fontSize: "11px",
                     letterSpacing: ".25em",
-                    color: "rgba(232,224,208,0.2)",
+                    color: "var(--text-cream-muted)",
                     textTransform: "uppercase",
                 }}>
                     {facet.topLabel}
@@ -147,7 +148,7 @@ function SplitSide({ facet, hovered, isLeft, onHover }: SideProps) {
                     fontSize: "9px",
                     letterSpacing: ".35em",
                     textTransform: "uppercase",
-                    color: isFme ? "rgba(232,224,208,0.4)" : "var(--gold)",
+                    color: isFme ? "var(--text-cream-ghost)" : "var(--gold)",
                     transition: "opacity 0.4s",
                     opacity: isOpposite ? 0.4 : 1,
                 }}>
@@ -173,7 +174,9 @@ function SplitSide({ facet, hovered, isLeft, onHover }: SideProps) {
                 </h2>
 
                 {/* Descripción — aparece en hover */}
-                <p style={{
+                <p
+                    className="max-md:!translate-y-0 max-md:!opacity-100"
+                    style={{
                     fontSize: "12px",
                     lineHeight: 1.85,
                     color: "var(--cream-dim)",
@@ -183,12 +186,14 @@ function SplitSide({ facet, hovered, isLeft, onHover }: SideProps) {
                     opacity: isHovered ? 1 : 0,
                     transform: isHovered ? "translateY(0)" : "translateY(12px)",
                     transition: "opacity 0.4s 0.1s, transform 0.4s 0.1s",
-                }}>
+                }}
+                >
                     {facet.desc}
                 </p>
 
-                {/* CTA */}
-                <div style={{
+                <div
+                    className="max-md:!translate-y-0 max-md:!opacity-100"
+                    style={{
                     display: "inline-flex",
                     alignItems: "center",
                     gap: "10px",
@@ -202,7 +207,8 @@ function SplitSide({ facet, hovered, isLeft, onHover }: SideProps) {
                     opacity: isHovered ? 1 : 0,
                     transform: isHovered ? "translateY(0)" : "translateY(8px)",
                     transition: "opacity 0.3s 0.2s, transform 0.3s 0.2s",
-                }}>
+                }}
+                >
                     {facet.cta}
                 </div>
             </div>
@@ -244,65 +250,57 @@ function BrandsSection() {
     return (
         <section
             ref={ref}
-            style={{
-                padding: "100px 40px",
-                borderTop: "1px solid rgba(232,224,208,0.07)",
-                background: "#0e0c08",
-            }}
+            className="relative border-t border-[var(--border-gold-10)] bg-fme-surface-warm px-4 py-16 sm:px-6 sm:py-20 md:px-10 md:py-28"
         >
+            <div
+                className="pointer-events-none absolute inset-0 opacity-[0.04] mix-blend-overlay [background-image:url('https://grainy-gradients.vercel.app/noise.svg')]"
+                aria-hidden
+            />
+            <div
+                className="pointer-events-none absolute left-1/2 top-0 h-[min(40vh,320px)] w-[min(100%,720px)] -translate-x-1/2 blur-3xl"
+                style={{ background: "radial-gradient(circle, rgb(var(--gold-rgb) / 0.07) 0%, transparent 65%)" }}
+                aria-hidden
+            />
+
             {/* Header */}
-            <div className="brands-title" style={{ marginBottom: "60px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
-                    <span style={{ width: "28px", height: "1px", background: "var(--gold)", display: "block" }} />
-                    <span style={{ fontSize: "10px", letterSpacing: ".3em", textTransform: "uppercase", color: "var(--gold)" }}>
-                        Catálogo Multimarca
+            <div className="brands-title relative z-[1] mb-14 max-w-4xl md:mb-20">
+                <div className="mb-4 flex items-center gap-3">
+                    <span className="h-px w-8 bg-fme-gold md:w-10" />
+                    <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-fme-gold">
+                        Catálogo multimarca
                     </span>
                 </div>
-                <h2 style={{
-                    fontFamily: "var(--font-display)",
-                    fontSize: "clamp(40px,6vw,72px)",
-                    lineHeight: .9,
-                    color: "var(--cream)",
-                }}>
-                    LAS MARCAS<br />
-                    <span style={{ color: "transparent", WebkitTextStroke: "1px rgba(232,224,208,0.3)" }}>
+                <h2 className="fme-font-display text-[clamp(38px,6vw,72px)] font-bold leading-[0.92] text-fme-cream">
+                    LAS MARCAS
+                    <br />
+                    <span className="text-transparent [-webkit-text-stroke:1px_var(--text-cream-stroke)]">
                         QUE CURÓ FME.
                     </span>
                 </h2>
             </div>
 
             {/* Grid de marcas */}
-            <div style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-                gap: "1px",
-                background: "rgba(232,224,208,0.06)",
-            }}>
+            <div
+                className="relative z-[1] grid gap-px bg-[var(--border-cream-06)] shadow-[0_40px_100px_-48px_rgb(0_0_0/0.85)]"
+                style={{
+                    gridTemplateColumns: "repeat(auto-fill, minmax(min(100%,260px),1fr))",
+                }}
+            >
                 {BRANDS.map((brand) => (
                     <a
                         key={brand.id}
                         href={brand.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="brand-item"
+                        className="brand-item group block bg-fme-surface-warm p-9 transition-all duration-300 [text-decoration:none] hover:z-[2] hover:bg-fme-surface-warm-hover hover:shadow-[inset_0_0_0_1px_var(--border-gold-08)] sm:p-10 md:px-11"
                         data-cursor={brand.name}
-                        style={{
-                            display: "block",
-                            padding: "40px 36px",
-                            background: "#0e0c08",
-                            textDecoration: "none",
-                            transition: "background 0.3s",
-                            borderBottom: "none",
-                        }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = "#141208")}
-                        onMouseLeave={(e) => (e.currentTarget.style.background = "#0e0c08")}
                     >
                         {/* Número */}
                         <span style={{
                             fontFamily: "var(--font-display)",
                             fontSize: "10px",
                             letterSpacing: ".15em",
-                            color: "rgba(232,224,208,0.2)",
+                            color: "var(--text-cream-muted)",
                             display: "block",
                             marginBottom: "24px",
                         }}>
@@ -373,10 +371,15 @@ export default function Multimarca() {
     });
 
     return (
-        <div ref={pageRef} style={{ background: "var(--black)", minHeight: "100vh" }}>
+        <div ref={pageRef} className="relative min-h-dvh fme-page-vignette fme-noise-soft">
+            <header className="relative z-[25] border-b border-[var(--border-gold-08)] bg-gradient-to-b from-[rgb(var(--gold-rgb)/0.06)] to-transparent px-4 py-3.5 text-center md:py-4">
+                <p className="text-[9px] uppercase tracking-[0.42em] text-fme-cream-dim">
+                    FME Store · <span className="text-fme-gold">dos entradas</span>, un checkout
+                </p>
+            </header>
 
-            {/* Split screen principal */}
-            <div style={{ position: "relative", height: "100vh", display: "flex" }}>
+            {/* Split: apilado en móvil, lado a lado en desktop */}
+            <div className="relative flex min-h-[200dvh] flex-col md:h-screen md:min-h-0 md:flex-row">
 
                 {FACETS.map((facet, i) => (
                     <SplitSide
@@ -388,37 +391,16 @@ export default function Multimarca() {
                     />
                 ))}
 
-                {/* Línea divisoria */}
-                <div style={{
-                    position: "absolute",
-                    top: 0,
-                    bottom: 0,
-                    width: "1px",
-                    background: "rgba(232,224,208,0.1)",
-                    zIndex: 10,
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    pointerEvents: "none",
-                }}>
+                <div className="pointer-events-none absolute inset-y-0 left-1/2 z-10 hidden w-px -translate-x-1/2 bg-[var(--border-cream-10)] md:block">
                     <DividerNode hovered={hovered} />
                 </div>
 
-                {/* Hint inicial */}
                 {!hovered && (
-                    <p style={{
-                        position: "absolute",
-                        bottom: "32px",
-                        left: "50%",
-                        transform: "translateX(-50%)",
-                        zIndex: 20,
-                        fontSize: "9px",
-                        letterSpacing: ".25em",
-                        textTransform: "uppercase",
-                        color: "rgba(232,224,208,0.2)",
-                        whiteSpace: "nowrap",
-                        pointerEvents: "none",
-                    }}>
-                        Elige tu lado
+                    <p
+                        className="pointer-events-none absolute left-1/2 z-20 -translate-x-1/2 rounded-full border border-[var(--border-gold-08)] bg-[rgb(var(--black-rgb)/0.55)] px-4 py-1.5 text-[8px] uppercase tracking-[0.28em] text-[var(--text-cream-muted)] backdrop-blur-sm sm:text-[9px]"
+                        style={{ bottom: "max(24px, env(safe-area-inset-bottom, 8px))" }}
+                    >
+                        Elegí un lado
                     </p>
                 )}
             </div>

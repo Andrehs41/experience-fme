@@ -6,6 +6,7 @@ import Colecciones from "./pages/Colecciones";
 import Footer from "./components/Footer";
 import Comunidad from "./pages/Comunidad";
 import Multimarca from "./pages/Multimarca";
+import Showcase from "./pages/Showcase";
 
 export default function App() {
   return (
@@ -41,6 +42,12 @@ export default function App() {
             <>
               <Multimarca />
               <Footer variant="multimarca" />
+            </>
+          } />
+          <Route path="/showcase" element={
+            <>
+              <Showcase />
+              <Footer variant="colecciones" />
             </>
           } />
 

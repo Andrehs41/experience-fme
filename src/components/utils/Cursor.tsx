@@ -22,6 +22,10 @@ export default function Cursor({
         const label = labelRef.current;
         if (!cursor) return;
 
+        const mq = window.matchMedia("(min-width: 768px)");
+        const fine = window.matchMedia("(hover: hover) and (pointer: fine)");
+        if (!mq.matches || !fine.matches) return;
+
         const xTo = gsap.quickTo(cursor, "x", { duration: 0.4, ease: "power3" });
         const yTo = gsap.quickTo(cursor, "y", { duration: 0.4, ease: "power3" });
 

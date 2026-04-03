@@ -1,147 +1,188 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useId } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { gsap } from "../lib/gsap";
 import { useGSAP } from "@gsap/react";
 import { NAV_LINKS } from "../data/navlinksData";
 
-const BORDER = "1px solid rgba(232,224,208,0.07)";
-const BORDER_SM = "1px solid rgba(232,224,208,0.05)";
-
-const RESPONSIVE_CSS = `
-  .fme-nav-desktop { display: none !important; }
-  .fme-nav-burger  { display: flex !important; }
-
-  @media (min-width: 768px) {
-    .fme-nav-desktop { display: flex !important; }
-    .fme-nav-burger  { display: none !important; }
-  }
-`;
+const BR = "border-[var(--border-cream-07)]";
+const BR_SM = "border-[var(--border-cream-05)]";
 
 function ActiveIndicator({ active }: { active: boolean }) {
   return (
-    <span style={{
-      position: "absolute", bottom: 0, left: "28px", right: "28px",
-      height: "1px", background: "var(--gold)", transformOrigin: "left",
-      transform: active ? "scaleX(1)" : "scaleX(0)",
-      transition: "transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94)",
-    }} />
+    <span
+      aria-hidden
+      className={`pointer-events-none absolute bottom-0 left-7 right-7 h-px origin-left bg-fme-gold transition-transform duration-300 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] ${
+        active ? "scale-x-100" : "scale-x-0"
+      }`}
+    />
   );
 }
 
 function BurgerIcon({ isOpen }: { isOpen: boolean }) {
-  const line: React.CSSProperties = {
-    display: "block", width: "22px", height: "1px", background: "var(--cream)",
-  };
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
-      <span style={{ ...line, transition: "transform 0.3s", transform: isOpen ? "rotate(45deg) translateY(6px)" : "none" }} />
-      <span style={{ ...line, transition: "opacity 0.3s", opacity: isOpen ? 0 : 1 }} />
-      <span style={{ ...line, transition: "transform 0.3s", transform: isOpen ? "rotate(-45deg) translateY(-6px)" : "none" }} />
-    </div>
+    <span className="flex h-[13px] w-[22px] flex-col justify-between" aria-hidden>
+      <span
+        className={`block h-px w-full origin-center bg-fme-cream transition-transform duration-300 ease-out ${
+          isOpen ? "translate-y-[6px] rotate-45" : ""
+        }`}
+      />
+      <span className={`block h-px w-full bg-fme-cream transition-opacity duration-300 ${isOpen ? "opacity-0" : "opacity-100"}`} />
+      <span
+        className={`block h-px w-full origin-center bg-fme-cream transition-transform duration-300 ease-out ${
+          isOpen ? "-translate-y-[6px] -rotate-45" : ""
+        }`}
+      />
+    </span>
   );
 }
+
 export default function Navbar() {
   const navRef = useRef<HTMLElement>(null);
+  const mobileOverlayRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const lastScrollY = useRef(0);
   const { pathname } = useLocation();
   const isHome = pathname === "/";
+  const mobileNavId = useId();
 
-  useEffect(() => {
-    const id = "fme-navbar-styles";
-    if (document.getElementById(id)) return;
-    const tag = document.createElement("style");
-    tag.id = id;
-    tag.textContent = RESPONSIVE_CSS;
-    document.head.appendChild(tag);
-    return () => { document.getElementById(id)?.remove(); };
-  }, []);
+  const showGlass = scrolled || isOpen;
+  const compact = scrolled;
 
-  useGSAP(() => {
-    gsap.fromTo(
-      navRef.current,
-      { y: -100, opacity: 0 },
-      {
-        y: 0, opacity: 1, duration: 1.2, ease: "power4.out",
-        delay: isHome ? 3.6 : 0, clearProps: "transform,opacity"
+  useGSAP(
+    () => {
+      gsap.fromTo(
+        navRef.current,
+        { y: -100, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 1.2,
+          ease: "power4.out",
+          delay: isHome ? 3.6 : 0,
+          clearProps: "transform,opacity",
+        }
+      );
+    },
+    { dependencies: [isHome] }
+  );
+
+  useGSAP(
+    () => {
+      const root = mobileOverlayRef.current;
+      if (!root || !isOpen) return;
+
+      const reduced =
+        typeof window !== "undefined" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      const links = root.querySelectorAll<HTMLElement>(".mobile-nav-link");
+      const footer = root.querySelector<HTMLElement>(".mobile-nav-footer");
+      if (reduced) {
+        gsap.set(links, { clearProps: "all" });
+        if (footer) gsap.set(footer, { clearProps: "all" });
+        return;
       }
-    );
-  }, { dependencies: [isHome] });
+
+      gsap.fromTo(
+        links,
+        { y: 44, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          stagger: 0.055,
+          duration: 0.45,
+          ease: "power3.out",
+          overwrite: "auto",
+        }
+      );
+      if (footer) {
+        gsap.fromTo(
+          footer,
+          { y: 24, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.4, ease: "power3.out", delay: 0.12, overwrite: "auto" }
+        );
+      }
+    },
+    { dependencies: [isOpen] }
+  );
 
   useEffect(() => {
     const onScroll = () => {
       const y = window.scrollY;
       const goingDown = y > lastScrollY.current;
-      setScrolled(y > 60);
+      setScrolled(y > 48);
       if (y > 120 && goingDown) setHidden(true);
       else if (!goingDown) setHidden(false);
-      lastScrollY.current = y;
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => { setIsOpen(false); }, [pathname]);
+  useEffect(() => {
+    setIsOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [isOpen]);
 
-  const logoPadding = scrolled ? "16px 32px" : "24px 40px";
-  const ctaPadding = scrolled ? "0 24px" : "0 40px";
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isOpen]);
 
   return (
     <>
       <header
         ref={navRef}
-        style={{
-          position: "fixed", top: 0, left: 0, right: 0, zIndex: 400,
-          transition: "transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94), background 0.3s",
-          transform: hidden && !isOpen ? "translateY(-110%)" : "translateY(0)",
-          backgroundColor: scrolled ? "rgba(10,10,10,0.92)" : "transparent",
-          backdropFilter: scrolled ? "blur(16px)" : "none",
-          WebkitBackdropFilter: scrolled ? "blur(16px)" : "none",
-        }}
+        className={`fixed inset-x-0 top-0 z-[400] pt-[env(safe-area-inset-top,0px)] transition-[transform,background-color,backdrop-filter] duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] ${
+          hidden && !isOpen ? "-translate-y-full" : "translate-y-0"
+        } ${showGlass ? "fme-nav-surface" : "bg-transparent"}`}
       >
-        {/* Línea dorada */}
-        <div style={{
-          height: "1px",
-          background: "linear-gradient(90deg, transparent, var(--gold), transparent)",
-          opacity: scrolled ? 0.4 : 0, transition: "opacity 0.5s",
-        }} />
+        <div
+          className={`h-px bg-gradient-to-r from-transparent via-fme-gold to-transparent transition-opacity duration-500 ${
+            scrolled ? "opacity-60" : "opacity-[0.12]"
+          }`}
+        />
 
-        {/* Barra interna */}
-        <div style={{ display: "flex", alignItems: "stretch", borderBottom: BORDER }}>
-
-          {/* Logo  */}
-          <div style={{ display: "flex", alignItems: "center", borderRight: BORDER, padding: logoPadding, transition: "padding 0.3s" }}>
+        <div className={`flex min-h-[var(--nav-height)] items-stretch border-b ${BR}`}>
+          {/* Logo */}
+          <div
+            className={`flex items-center border-r ${BR} transition-[padding] duration-300 ${
+              compact ? "px-6 py-3 md:px-8 md:py-3" : "px-5 py-4 md:px-10 md:py-5"
+            }`}
+          >
             <Link
               to="/"
-              style={{ fontFamily: "var(--font-display)", fontSize: "26px", letterSpacing: "0.18em", color: "var(--cream)", textDecoration: "none", transition: "color 0.3s" }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "var(--gold)")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "var(--cream)")}
+              className="fme-focus-ring fme-font-display text-[24px] tracking-[0.18em] text-fme-cream transition-colors duration-300 hover:text-fme-gold md:text-[26px]"
             >
               FME
             </Link>
           </div>
 
-          {/* Links — SOLO desktop */}
+          {/* Desktop nav */}
           <nav
-            className="fme-nav-desktop"
-            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+            className="relative hidden flex-1 items-stretch justify-center md:flex"
+            aria-label="Principal"
           >
             {NAV_LINKS.map(({ label, path }) => {
               const active = pathname === path;
               return (
-                <div key={path} style={{ position: "relative", height: "100%", display: "flex", alignItems: "center", borderRight: BORDER_SM }}>
+                <div key={path} className={`relative flex items-stretch border-r ${BR_SM}`}>
                   <Link
                     to={path}
-                    style={{ padding: "4px 28px", fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.22em", color: active ? "var(--cream)" : "var(--cream-dim)", textDecoration: "none", transition: "color 0.3s" }}
-                    onMouseEnter={(e) => (e.currentTarget.style.color = "var(--cream)")}
-                    onMouseLeave={(e) => (e.currentTarget.style.color = active ? "var(--cream)" : "var(--cream-dim)")}
+                    className={`fme-focus-ring flex items-center px-7 py-1 text-[10px] uppercase tracking-[0.22em] transition-colors duration-300 ${
+                      active ? "text-fme-cream" : "text-fme-cream-dim hover:text-fme-cream"
+                    }`}
                   >
                     {label}
                   </Link>
@@ -151,79 +192,82 @@ export default function Navbar() {
             })}
           </nav>
 
-          {/* CTA Tienda — SOLO desktop */}
+          {/* Tienda desktop */}
           <div
-            className="fme-nav-desktop"
-            style={{ alignItems: "center", borderLeft: BORDER, padding: ctaPadding, transition: "padding 0.3s" }}
+            className={`hidden items-stretch border-l ${BR} transition-[padding] duration-300 md:flex ${
+              compact ? "px-5" : "px-8 lg:px-10"
+            }`}
           >
             <a
               href="https://storefme.com"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ fontFamily: "var(--font-display)", fontSize: "11px", letterSpacing: "0.22em", background: "var(--cream)", color: "var(--black)", padding: "8px 20px", textDecoration: "none", whiteSpace: "nowrap", transition: "background 0.3s" }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "var(--gold)")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "var(--cream)")}
+              className="fme-focus-ring fme-font-display my-auto inline-flex items-center rounded-sm bg-fme-cream px-5 py-2 text-[10px] uppercase tracking-[0.22em] text-fme-black shadow-[0_1px_0_0_var(--border-gold-10)] transition-all duration-300 hover:bg-fme-gold hover:shadow-[0_0_0_1px_var(--border-gold-18)] sm:text-[11px]"
             >
               TIENDA →
             </a>
           </div>
 
-          {/* Burger — SOLO mobile) */}
-          <div
-            className="fme-nav-burger"
-            style={{ alignItems: "center", borderLeft: BORDER, padding: "0 20px", marginLeft: "auto" }}
-          >
+          {/* Burger */}
+          <div className={`ml-auto flex items-stretch border-l ${BR} md:hidden`}>
             <button
-              onClick={() => setIsOpen((v) => !v)}
+              type="button"
+              className="fme-focus-ring flex items-center px-5 py-3"
+              aria-expanded={isOpen ? "true" : "false"}
+              aria-controls={mobileNavId}
               aria-label={isOpen ? "Cerrar menú" : "Abrir menú"}
-              style={{ background: "none", border: "none", cursor: "pointer", padding: "8px" }}
+              onClick={() => setIsOpen((v) => !v)}
             >
               <BurgerIcon isOpen={isOpen} />
             </button>
           </div>
-
         </div>
       </header>
 
-      {/* ── Menú mobile fullscreen */}
+      {/* Overlay móvil */}
       <div
-        className="fme-nav-burger"
-        style={{
-          position: "fixed", inset: 0, zIndex: 390,
-          background: "var(--black)",
-          flexDirection: "column", alignItems: "center", justifyContent: "center",
-          opacity: isOpen ? 1 : 0,
-          visibility: isOpen ? "visible" : "hidden",
-          transition: "opacity 0.4s, visibility 0.4s",
-        }}
+        ref={mobileOverlayRef}
+        id={mobileNavId}
+        className={`fixed inset-0 z-[380] flex flex-col bg-[radial-gradient(ellipse_130%_70%_at_50%_-15%,rgb(var(--gold-rgb)/0.14),transparent_50%),var(--black)] pt-[calc(var(--nav-height)+env(safe-area-inset-top,0px))] transition-[opacity,visibility] duration-500 ease-out md:hidden ${
+          isOpen ? "pointer-events-auto opacity-100 visible" : "pointer-events-none invisible opacity-0"
+        }`}
+        aria-hidden={isOpen ? "false" : "true"}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Menú de navegación"
       >
-        <nav style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
-          {NAV_LINKS.map(({ label, path }, i) => (
-            <Link
-              key={path}
-              to={path}
-              onClick={() => setIsOpen(false)}
-              style={{
-                width: "100%", textAlign: "center",
-                fontFamily: "var(--font-display)",
-                fontSize: "clamp(40px, 11vw, 72px)",
-                letterSpacing: "0.04em", padding: "18px 0",
-                borderBottom: "1px solid rgba(232,224,208,0.06)",
-                color: pathname === path ? "var(--gold)" : "var(--cream)",
-                textDecoration: "none", transition: "color 0.3s",
-                transitionDelay: isOpen ? `${i * 55}ms` : "0ms",
-              }}
-              onMouseEnter={(e) => { if (pathname !== path) e.currentTarget.style.color = "var(--cream-dim)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.color = pathname === path ? "var(--gold)" : "var(--cream)"; }}
-            >
-              {label.toUpperCase()}
-            </Link>
-          ))}
+        <nav className="flex flex-1 flex-col justify-center px-2" aria-label="Móvil">
+          {NAV_LINKS.map(({ label, path }, i) => {
+            const active = pathname === path;
+            return (
+              <Link
+                key={path}
+                to={path}
+                className={`mobile-nav-link fme-focus-ring fme-font-display border-b border-[var(--border-cream-06)] py-5 text-center text-[clamp(2rem,10vw,3.75rem)] leading-none tracking-[0.02em] transition-colors duration-300 ${
+                  active ? "text-fme-gold" : "text-fme-cream hover:text-fme-gold"
+                }`}
+                onClick={() => setIsOpen(false)}
+              >
+                {label.toUpperCase()}
+              </Link>
+            );
+          })}
         </nav>
 
-        <p style={{ position: "absolute", bottom: "32px", fontSize: "9px", letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(232,224,208,0.18)" }}>
-          La marca del barrio
-        </p>
+        <div className="mobile-nav-footer flex flex-col items-center gap-8 px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+          <a
+            href="https://storefme.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="fme-focus-ring fme-font-display w-full max-w-sm rounded-sm border border-[var(--border-gold-12)] bg-fme-cream py-3.5 text-center text-[11px] uppercase tracking-[0.28em] text-fme-black transition-colors duration-300 hover:bg-fme-gold"
+            onClick={() => setIsOpen(false)}
+          >
+            Ir a la tienda
+          </a>
+          <p className="text-[9px] uppercase tracking-[0.35em] text-[var(--text-cream-faint)]">
+            FME · Medellín
+          </p>
+        </div>
       </div>
     </>
   );

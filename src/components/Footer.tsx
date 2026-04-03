@@ -1,134 +1,271 @@
 import { useRef } from "react";
+import { Link } from "react-router-dom";
 import { gsap, useGSAP } from "../lib/gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
+import { NAV_LINKS } from "../data/navlinksData";
 
 interface FooterProps {
     variant: "home" | "barrio" | "minimal" | "colecciones" | "comunidad" | "multimarca";
 }
 
+const SOCIAL_LINKS = [
+    { label: "Instagram", href: "https://instagram.com" },
+    { label: "Spotify", href: "https://open.spotify.com" },
+    { label: "TikTok", href: "https://tiktok.com" },
+] as const;
+
+const LEGAL_LINKS = [
+    { label: "Privacidad", href: "#" },
+    { label: "Contacto", href: "#" },
+    { label: "Legal", href: "#" },
+] as const;
+
+type StyleKey = FooterProps["variant"];
+
+const STYLES: Record<
+    StyleKey,
+    {
+        bg: string;
+        text: string;
+        borderTop: string;
+        brand: string;
+        tag: string;
+        navLink: string;
+        social: string;
+        legal: string;
+        msg: string;
+        meta: string;
+        showGradient: boolean;
+    }
+> = {
+    home: {
+        bg: "bg-fme-black",
+        text: "text-fme-white",
+        borderTop: "border-[var(--border-gold-10)]",
+        brand: "text-fme-gold",
+        tag: "text-fme-cream/90",
+        navLink: "text-fme-cream-dim hover:text-fme-gold",
+        social: "text-fme-white/70 hover:text-fme-gold",
+        legal: "text-fme-white/55 hover:text-fme-cream",
+        msg: "text-fme-cream",
+        meta: "text-fme-white/45",
+        showGradient: true,
+    },
+    barrio: {
+        bg: "bg-fme-gold",
+        text: "text-fme-black",
+        borderTop: "border-fme-black/15",
+        brand: "text-fme-black",
+        tag: "text-fme-black/75",
+        navLink: "text-fme-black/65 hover:text-fme-black",
+        social: "text-fme-black/65 hover:text-fme-black",
+        legal: "text-fme-black/55 hover:text-fme-black",
+        msg: "text-fme-black",
+        meta: "text-fme-black/50",
+        showGradient: false,
+    },
+    minimal: {
+        bg: "bg-fme-white",
+        text: "text-fme-black",
+        borderTop: "border-[var(--border-cream-15)]",
+        brand: "text-fme-black",
+        tag: "text-fme-cream-dim",
+        navLink: "text-fme-cream-dim hover:text-fme-black",
+        social: "text-fme-black/60 hover:text-fme-gold",
+        legal: "text-fme-cream-dim hover:text-fme-black",
+        msg: "text-fme-black",
+        meta: "text-fme-black/45",
+        showGradient: false,
+    },
+    colecciones: {
+        bg: "bg-fme-surface-deep",
+        text: "text-fme-white",
+        borderTop: "border-[var(--border-gold-08)]",
+        brand: "text-fme-gold",
+        tag: "text-fme-cream/85",
+        navLink: "text-fme-cream-dim hover:text-fme-gold",
+        social: "text-fme-white/70 hover:text-fme-gold",
+        legal: "text-fme-white/50 hover:text-fme-cream",
+        msg: "text-fme-cream",
+        meta: "text-fme-white/40",
+        showGradient: true,
+    },
+    comunidad: {
+        bg: "bg-fme-white",
+        text: "text-fme-black",
+        borderTop: "border-fme-black/10",
+        brand: "text-fme-black",
+        tag: "text-fme-cream-dim",
+        navLink: "text-fme-cream-dim hover:text-fme-gold",
+        social: "text-fme-black/60 hover:text-fme-gold",
+        legal: "text-fme-cream-dim hover:text-fme-black",
+        msg: "text-fme-black",
+        meta: "text-fme-black/45",
+        showGradient: false,
+    },
+    multimarca: {
+        bg: "bg-fme-surface-warm",
+        text: "text-fme-cream",
+        borderTop: "border-[var(--border-gold-10)]",
+        brand: "text-fme-white",
+        tag: "text-fme-cream-dim",
+        navLink: "text-fme-cream-dim hover:text-fme-gold",
+        social: "text-fme-cream/80 hover:text-fme-white",
+        legal: "text-fme-cream-dim hover:text-fme-cream",
+        msg: "text-fme-cream",
+        meta: "text-fme-cream-dim",
+        showGradient: true,
+    },
+};
+
+const MESSAGES: Record<StyleKey, { tag: string; msg: string }> = {
+    home: { tag: "MARCA · MEDELLÍN", msg: "Marca de ropa desde Medellín. Tienda oficial en storefme.com." },
+    barrio: { tag: "CRÓNICA", msg: "Lo que mostramos acá es lo que pasa afuera del set." },
+    minimal: { tag: "FME", msg: "Menos ruido, mismo criterio." },
+    colecciones: { tag: "LOOKBOOK", msg: "Archivo visual de siluetas y escenas — el precio está en la tienda." },
+    comunidad: { tag: "GENTE REAL", msg: "Fotos de quienes visten FME en la calle, no en casting." },
+    multimarca: { tag: "FME STORE", msg: "Línea propia + marcas elegidas. Un solo checkout." },
+};
+
 export default function Footer({ variant }: FooterProps) {
     const footerRef = useRef<HTMLElement>(null);
-
-    const configs = {
-        home: {
-            bg: "bg-black",
-            text: "text-white",
-            border: "border-white/10",
-            accent: "text-[gold]",
-            msg: "EL EPICENTRO DEL ESTILO URBANO.",
-            tag: "FME EXPERIENCE"
-        },
-        barrio: {
-            bg: "bg-[gold]",
-            text: "text-black",
-            border: "border-black/20",
-            accent: "text-black",
-            msg: "ESTA ESENCIA NO SE COMPRA, SE VIVE.",
-            tag: "DESDE LAS CALLES"
-        },
-        minimal: {
-            bg: "bg-neutral-100",
-            text: "text-neutral-900",
-            border: "border-neutral-300",
-            accent: "text-neutral-500",
-            msg: "LESS IS MORE.",
-            tag: "PURE AESTHETICS"
-        },
-        colecciones: {
-            bg: "bg-[#050505]",
-            text: "text-white",
-            border: "border-white/5",
-            accent: "text-[gold]",
-            msg: "ARCHIVOS SELECCIONADOS 2026.",
-            tag: "LIMITED DROP"
-        },
-        comunidad: {
-            bg: "bg-white",
-            text: "text-black",
-            border: "border-black/10",
-            accent: "text-neutral-400",
-            msg: "EL CLAN DE LA CALLE.",
-            tag: "JOIN THE MOVEMENT"
-        },
-        multimarca: {
-            bg: "bg-zinc-900",
-            text: "text-zinc-400",
-            border: "border-zinc-800",
-            accent: "text-white",
-            msg: "CURACIÓN GLOBAL / IMPACTO LOCAL.",
-            tag: "ALLIANCE"
-        }
-    };
-
-    const current = configs[variant];
+    const s = STYLES[variant];
+    const copy = MESSAGES[variant];
 
     useGSAP(() => {
-        // Animación de entrada
-        gsap.from(".footer-content", {
-            y: 50,
+        gsap.from(".fme-footer-reveal", {
+            y: 40,
             opacity: 0,
-            duration: 1.2,
+            duration: 0.9,
+            stagger: 0.07,
             ease: "expo.out",
             scrollTrigger: {
                 trigger: footerRef.current,
-                start: "top 90%",
-            }
+                start: "top 91%",
+            },
         });
     }, { scope: footerRef });
 
     return (
         <footer
             ref={footerRef}
-            className={`py-24 px-8 border-t transition-colors duration-700 ${current.bg} ${current.text} ${current.border}`}
+            className={`relative overflow-hidden border-t ${s.borderTop} px-5 py-16 transition-colors duration-700 sm:px-8 sm:py-20 md:px-10 md:py-24 ${s.bg} ${s.text}`}
         >
-            <div className="max-w-[1400px] mx-auto footer-content">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-12">
+            {s.showGradient && (
+                <div
+                    className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_100%,rgb(var(--gold-rgb)/0.07),transparent_65%)] opacity-90"
+                    aria-hidden
+                />
+            )}
 
-                    {/* Branding */}
-                    <div className="space-y-4">
-                        <h2 className={`text-8xl font-black tracking-tighter leading-none italic ${current.accent}`}>
-                            FME
-                        </h2>
-                        <div className="space-y-1">
-                            <p className="text-[11px] font-bold uppercase tracking-[0.5em]">{current.tag}</p>
-                            <p className="text-[10px] uppercase tracking-widest opacity-40 italic">La marca del barrio</p>
+            <div className="footer-content relative z-10 mx-auto max-w-[1400px]">
+                <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-10 lg:gap-y-16">
+                    {/* Marca */}
+                    <div className="fme-footer-reveal lg:col-span-4">
+                        <Link
+                            to="/"
+                            className={`fme-focus-ring group inline-block rounded-sm ${s.brand}`}
+                        >
+                            <span className="fme-font-display block text-[clamp(3.5rem,14vw,8rem)] font-black italic leading-none tracking-tighter transition-transform duration-500 group-hover:translate-x-1">
+                                FME
+                            </span>
+                        </Link>
+                        <div className="mt-5 space-y-2">
+                            <p className={`text-[11px] font-bold uppercase tracking-[0.45em] ${s.tag}`}>
+                                {copy.tag}
+                            </p>
+                            <p className={`text-[10px] uppercase tracking-[0.28em] italic ${s.meta}`}>
+                                Diseño y producción con sede en Medellín
+                            </p>
                         </div>
                     </div>
 
-                    {/* Navigation / Links (Minimal) */}
-                    <div className="grid grid-cols-2 gap-16 text-[10px] uppercase tracking-[0.3em] font-medium">
-                        <div className="flex flex-col gap-3">
-                            <a href="#" className="hover:opacity-50 transition-opacity">Instagram</a>
-                            <a href="#" className="hover:opacity-50 transition-opacity">Spotify</a>
-                            <a href="#" className="hover:opacity-50 transition-opacity">TikTok</a>
+                    {/* Explorar */}
+                    <nav className="fme-footer-reveal lg:col-span-2" aria-label="Pie — enlaces">
+                        <p className={`mb-5 text-[9px] uppercase tracking-[0.35em] ${s.meta}`}>Explorar</p>
+                        <ul className="flex flex-col gap-3">
+                            {NAV_LINKS.map(({ label, path }) => (
+                                <li key={path}>
+                                    <Link
+                                        to={path}
+                                        className={`fme-focus-ring text-[10px] uppercase tracking-[0.28em] transition-colors duration-300 ${s.navLink}`}
+                                    >
+                                        {label}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </nav>
+
+                    {/* Social + Legal */}
+                    <div className="fme-footer-reveal grid grid-cols-2 gap-10 sm:gap-16 lg:col-span-3">
+                        <div>
+                            <p className={`mb-5 text-[9px] uppercase tracking-[0.35em] ${s.meta}`}>Social</p>
+                            <ul className="flex flex-col gap-3">
+                                {SOCIAL_LINKS.map(({ label, href }) => (
+                                    <li key={label}>
+                                        <a
+                                            href={href}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className={`fme-focus-ring text-[10px] uppercase tracking-[0.28em] transition-colors duration-300 ${s.social}`}
+                                        >
+                                            {label}
+                                        </a>
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
-                        <div className="flex flex-col gap-3 text-right md:text-left">
-                            <a href="#" className="hover:opacity-50 transition-opacity">Privacy</a>
-                            <a href="#" className="hover:opacity-50 transition-opacity">Contact</a>
-                            <a href="#" className="hover:opacity-50 transition-opacity">Legal</a>
+                        <div>
+                            <p className={`mb-5 text-[9px] uppercase tracking-[0.35em] ${s.meta}`}>Info</p>
+                            <ul className="flex flex-col gap-3">
+                                {LEGAL_LINKS.map(({ label, href }) => (
+                                    <li key={label}>
+                                        <a
+                                            href={href}
+                                            className={`fme-focus-ring text-[10px] uppercase tracking-[0.28em] transition-colors duration-300 ${s.legal}`}
+                                        >
+                                            {label}
+                                        </a>
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
                     </div>
 
-                    {/* Message & Copyright */}
-                    <div className="flex flex-col items-start md:items-end text-left md:text-right max-w-xs gap-6">
-                        <p className="text-sm font-bold leading-tight tracking-tight">
-                            {current.msg}
+                    {/* Mensaje */}
+                    <div className="fme-footer-reveal flex flex-col justify-between gap-8 lg:col-span-3 lg:text-right">
+                        <p className={`text-sm font-bold leading-snug tracking-tight sm:text-base ${s.msg}`}>
+                            {copy.msg}
                         </p>
-                        <div className="space-y-1">
-                            <p className="text-[10px] opacity-40 font-mono tracking-tighter">
+                        <div className={`space-y-2 lg:ml-auto lg:text-right ${s.meta}`}>
+                            <p className="font-mono text-[10px] tracking-tighter opacity-80">
                                 [ 06.0441° N, 75.5643° W ]
                             </p>
-                            <p className="text-[9px] font-bold tracking-[0.2em] opacity-80 uppercase">
-                                © 2026 MEDELLÍN, COLOMBIA
+                            <p className="text-[9px] font-bold uppercase tracking-[0.22em] opacity-90">
+                                © 2026 Medellín, Colombia
                             </p>
                         </div>
                     </div>
                 </div>
 
-                {/* Línea decorativa final */}
-                <div className={`mt-20 h-px w-full ${current.border} opacity-50`}></div>
+                {/* Tienda oficial */}
+                <div
+                    className={`fme-footer-reveal mt-14 flex flex-col items-center gap-4 border-t pt-10 sm:mt-16 sm:flex-row sm:justify-between ${s.borderTop}`}
+                >
+                    <a
+                        href="https://storefme.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`fme-focus-ring fme-font-display text-[10px] uppercase tracking-[0.38em] transition-colors duration-300 ${
+                            variant === "barrio"
+                                ? "text-fme-black/75 hover:text-fme-black"
+                                : "text-fme-gold hover:text-fme-cream"
+                        }`}
+                    >
+                        storefme.com →
+                    </a>
+                    <p className={`text-[9px] uppercase tracking-[0.3em] ${s.meta}`}>Tienda oficial FME</p>
+                </div>
             </div>
         </footer>
     );

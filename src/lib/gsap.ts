@@ -6,8 +6,7 @@ import { Flip } from "gsap/Flip";
 import { useGSAP } from "@gsap/react";
 
 if (typeof window !== "undefined") {
-    gsap.registerPlugin(ScrollTrigger, useGSAP);
+    gsap.registerPlugin(ScrollTrigger, SplitText, ScrollSmoother, Flip, useGSAP);
 }
-gsap.registerPlugin(ScrollTrigger, SplitText, ScrollSmoother, Flip, useGSAP);
 
 export { gsap, ScrollTrigger, SplitText, ScrollSmoother, Flip, useGSAP };
