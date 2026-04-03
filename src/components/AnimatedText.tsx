@@ -17,7 +17,7 @@ type SplitLevel = "chars" | "words" | "lines";
 
 interface Props {
     text: string;
-    highlightWords?: string[]; 
+    highlightWords?: string[];
     className?: string;
     as?: "h1" | "h2" | "h3" | "h4" | "p" | "span";
     delay?: number;
@@ -187,40 +187,41 @@ export default function AnimatedText({
         if (!ref.current) return;
 
         const splitType = variant === "reveal" ? "lines" : splitBy;
-
-        const split = new SplitText(ref.current, {
-            type: "lines,words,chars", 
-            linesClass: "split-line",
-        });
-
-        if (highlightWords.length > 0) {
-            split.words.forEach((wordElement) => {
-                const cleanWord = (wordElement as HTMLElement).innerText.toLowerCase().replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "");
-                const isMatch = highlightWords.some(h => h.toLowerCase() === cleanWord);
-
-                if (isMatch) {
-                    wordElement.classList.add("text-fme-gold", "italic");
-                }
+        document.fonts.ready.then(() => {
+            const split = new SplitText(ref.current, {
+                type: "lines,words,chars",
+                linesClass: "split-line",
             });
-        }
 
-        const targets: Element[] =
-            splitType === "chars" ? split.chars :
-                splitType === "words" ? split.words :
-                    split.lines;
+            if (highlightWords.length > 0) {
+                split.words.forEach((wordElement) => {
+                    const cleanWord = (wordElement as HTMLElement).innerText.toLowerCase().replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "");
+                    const isMatch = highlightWords.some(h => h.toLowerCase() === cleanWord);
 
-        getAnimation(
-            variant,
-            targets,
-            delay,
-            duration,
-            stagger,
-            ref.current,
-            triggerStart,
-            immediate,
-        );
+                    if (isMatch) {
+                        wordElement.classList.add("text-fme-gold", "italic");
+                    }
+                });
+            }
 
-        return () => split.revert();
+            const targets: Element[] =
+                splitType === "chars" ? split.chars :
+                    splitType === "words" ? split.words :
+                        split.lines;
+
+            getAnimation(
+                variant,
+                targets,
+                delay,
+                duration,
+                stagger,
+                ref.current,
+                triggerStart,
+                immediate,
+            );
+
+            return () => split.revert();
+        });
     }, { scope: ref, dependencies: [text, highlightWords] });
 
     /* "reveal" usa clip-path en líneas; el resto (p. ej. fall con rotateX) necesita overflow visible para no cortar la animación */
