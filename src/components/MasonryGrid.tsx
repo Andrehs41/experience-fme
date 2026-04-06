@@ -1,16 +1,29 @@
-import { useRef, useState } from "react";
+// src/components/MasonryGrid.tsx
+import { useRef, useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "../lib/gsap";
 import type { ComunidadMember } from "../data/comunidadData";
 
-interface LightboxProps {
-    member: ComunidadMember;
-    onClose: () => void;
-}
-
-function Lightbox({ member, onClose }: LightboxProps) {
+// ── Lightbox ──────────────────────────────────────────────────────
+function Lightbox({ member, onClose }: { member: ComunidadMember; onClose: () => void }) {
     const ref = useRef<HTMLDivElement>(null);
 
+    // Bloquear scroll
+    useEffect(() => {
+        const prev = document.documentElement.style.overflow;
+        document.documentElement.style.overflow = "hidden";
+        return () => { document.documentElement.style.overflow = prev; };
+    }, []);
+
+    // Cerrar con Escape
+    useEffect(() => {
+        const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+        window.addEventListener("keydown", onKey);
+        return () => window.removeEventListener("keydown", onKey);
+    }, [onClose]);
+
+    // Animación entrada
     useGSAP(() => {
         gsap.from(ref.current, {
             opacity: 0,
@@ -20,19 +33,23 @@ function Lightbox({ member, onClose }: LightboxProps) {
         });
     });
 
-    return (
+    // Portal — monta en document.body para escapar de cualquier
+    // stacking context (transform, filter, backdrop-filter) que
+    // rompa el position: fixed del backdrop
+    return createPortal(
         <div
             onClick={onClose}
             style={{
                 position: "fixed",
                 inset: 0,
-                zIndex: 800,
+                zIndex: 9000,
                 background: "var(--overlay-modal)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 padding: "40px",
                 backdropFilter: "blur(8px)",
+                WebkitBackdropFilter: "blur(8px)",
                 cursor: "zoom-out",
             }}
         >
@@ -42,32 +59,59 @@ function Lightbox({ member, onClose }: LightboxProps) {
                 style={{
                     position: "relative",
                     maxWidth: "680px",
-                    maxHeight: "90vh",
+                    maxHeight: "90dvh",
                     width: "100%",
+                    cursor: "default",
                 }}
             >
                 <img
                     src={member.src}
                     alt={member.name}
-                    style={{ width: "100%", height: "auto", maxHeight: "75vh", objectFit: "contain", display: "block" }}
+                    style={{
+                        width: "100%",
+                        height: "auto",
+                        maxHeight: "75dvh",
+                        objectFit: "contain",
+                        display: "block",
+                    }}
                 />
 
                 {/* Info */}
-                <div style={{ padding: "20px 0 0", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                <div style={{
+                    padding: "20px 0 0",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "baseline",
+                }}>
                     <div>
-                        <p style={{ fontFamily: "var(--font-display)", fontSize: "22px", letterSpacing: ".08em", color: "var(--cream)" }}>
+                        <p style={{
+                            fontFamily: "var(--font-display)",
+                            fontSize: "22px",
+                            letterSpacing: ".08em",
+                            color: "var(--cream)",
+                        }}>
                             {member.name}
                         </p>
-                        <p style={{ fontSize: "10px", letterSpacing: ".2em", textTransform: "uppercase", color: "var(--gold)", marginTop: "4px" }}>
+                        <p style={{
+                            fontSize: "10px",
+                            letterSpacing: ".2em",
+                            textTransform: "uppercase",
+                            color: "var(--gold)",
+                            marginTop: "4px",
+                        }}>
                             {member.collection}
                         </p>
                     </div>
-                    <span style={{ fontSize: "11px", color: "var(--text-cream-ghost)", letterSpacing: ".1em" }}>
+                    <span style={{
+                        fontSize: "11px",
+                        color: "var(--text-cream-ghost)",
+                        letterSpacing: ".1em",
+                    }}>
                         {member.date}
                     </span>
                 </div>
 
-                {/* Cerrar */}
+                {/* Botón cerrar */}
                 <button
                     onClick={onClose}
                     style={{
@@ -89,18 +133,17 @@ function Lightbox({ member, onClose }: LightboxProps) {
                     Cerrar ×
                 </button>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }
 
-// Card 
-interface CardProps {
+// ── Card ──────────────────────────────────────────────────────────
+function MasonryCard({ member, index, onClick }: {
     member: ComunidadMember;
     index: number;
     onClick: (m: ComunidadMember) => void;
-}
-
-function MasonryCard({ member, index, onClick }: CardProps) {
+}) {
     const [hovered, setHovered] = useState(false);
     const imgRef = useRef<HTMLImageElement>(null);
     const [imgError, setImgError] = useState(false);
@@ -135,7 +178,7 @@ function MasonryCard({ member, index, onClick }: CardProps) {
                 {String(index + 1).padStart(2, "0")}
             </span>
 
-            {/* Imagen */}
+            {/* Imagen o placeholder */}
             {!imgError ? (
                 <img
                     ref={imgRef}
@@ -152,7 +195,6 @@ function MasonryCard({ member, index, onClick }: CardProps) {
                     }}
                 />
             ) : (
-                /* Placeholder cuando no hay imagen */
                 <div style={{
                     width: "100%",
                     aspectRatio: member.ratio,
@@ -163,13 +205,17 @@ function MasonryCard({ member, index, onClick }: CardProps) {
                     transition: "transform .6s cubic-bezier(.25,.46,.45,.94)",
                     transform: hovered ? "scale(1.04)" : "scale(1)",
                 }}>
-                    <span style={{ fontFamily: "var(--font-display)", fontSize: "40px", color: "var(--text-cream-whisper)" }}>
+                    <span style={{
+                        fontFamily: "var(--font-display)",
+                        fontSize: "40px",
+                        color: "var(--text-cream-whisper)",
+                    }}>
                         F M E
                     </span>
                 </div>
             )}
 
-            {/* Info */}
+            {/* Overlay con info */}
             <div style={{
                 position: "absolute",
                 inset: 0,
@@ -181,14 +227,33 @@ function MasonryCard({ member, index, onClick }: CardProps) {
                 justifyContent: "flex-end",
                 padding: "16px",
             }}>
-                <p style={{ fontFamily: "var(--font-display)", fontSize: "16px", letterSpacing: ".08em", color: "var(--cream)" }}>
+                <p style={{
+                    fontFamily: "var(--font-display)",
+                    fontSize: "16px",
+                    letterSpacing: ".08em",
+                    color: "var(--cream)",
+                }}>
                     {member.name}
                 </p>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "4px" }}>
-                    <span style={{ fontSize: "9px", letterSpacing: ".2em", textTransform: "uppercase", color: "var(--gold)" }}>
+                <div style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginTop: "4px",
+                }}>
+                    <span style={{
+                        fontSize: "9px",
+                        letterSpacing: ".2em",
+                        textTransform: "uppercase",
+                        color: "var(--gold)",
+                    }}>
                         {member.collection}
                     </span>
-                    <span style={{ fontSize: "9px", color: "var(--text-cream-ghost)", letterSpacing: ".1em" }}>
+                    <span style={{
+                        fontSize: "9px",
+                        color: "var(--text-cream-ghost)",
+                        letterSpacing: ".1em",
+                    }}>
                         {member.date}
                     </span>
                 </div>
@@ -197,12 +262,8 @@ function MasonryCard({ member, index, onClick }: CardProps) {
     );
 }
 
-// MasonryGrid principal
-interface Props {
-    members: ComunidadMember[];
-}
-
-export default function MasonryGrid({ members }: Props) {
+// ── Grid principal ────────────────────────────────────────────────
+export default function MasonryGrid({ members }: { members: ComunidadMember[] }) {
     const [selected, setSelected] = useState<ComunidadMember | null>(null);
     const gridRef = useRef<HTMLDivElement>(null);
 
@@ -215,12 +276,13 @@ export default function MasonryGrid({ members }: Props) {
                 y: 50,
                 opacity: 0,
                 duration: 0.8,
-                delay: (i % 3) * 0.08, 
+                delay: (i % 3) * 0.08,
                 ease: "power3.out",
                 scrollTrigger: {
                     trigger: card,
                     start: "top 90%",
                     toggleActions: "play none none none",
+                    once: true,
                 },
             });
         });
@@ -230,10 +292,7 @@ export default function MasonryGrid({ members }: Props) {
         <>
             <div
                 ref={gridRef}
-                style={{
-                    columns: "3",
-                    columnGap: "6px",
-                }}
+                style={{ columns: "3", columnGap: "6px" }}
                 className="masonry-wrap"
             >
                 {members.map((member, i) => (

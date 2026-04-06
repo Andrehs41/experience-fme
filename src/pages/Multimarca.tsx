@@ -7,26 +7,29 @@ import type { Facet } from "../data/multimarcaData";
 
 type HoveredSide = "fme" | "multimarca" | null;
 
+// ── Nodo VS central ───────────────────────────────────────────────
 function DividerNode({ hovered }: { hovered: HoveredSide }) {
     return (
         <div className={`
-      absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
-      w-12 h-12 rounded-full border bg-black flex items-center justify-center z-20
-      transition-all duration-500
-      ${hovered
+            absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+            w-12 h-12 rounded-full border bg-black
+            flex items-center justify-center z-20
+            transition-all duration-500
+            ${hovered
                 ? "border-fme-gold/40 scale-110 shadow-[0_0_20px_rgba(201,168,76,0.15)]"
                 : "border-white/10"}
-    `}>
+        `}>
             <span className={`
-        fme-font-display text-[10px] tracking-widest transition-colors duration-300
-        ${hovered ? "text-fme-gold" : "text-fme-cream/40"}
-      `}>
+                fme-font-display text-[10px] tracking-widest transition-colors duration-300
+                ${hovered ? "text-fme-gold" : "text-fme-cream/40"}
+            `}>
                 VS
             </span>
         </div>
     );
 }
 
+// ── Lado del split ────────────────────────────────────────────────
 function SplitSide({ facet, hovered, isLeft, onHover }: {
     facet: Facet;
     hovered: HoveredSide;
@@ -35,6 +38,8 @@ function SplitSide({ facet, hovered, isLeft, onHover }: {
 }) {
     const isHovered = hovered === facet.id;
     const isOpposite = hovered !== null && hovered !== facet.id;
+    const isFme = facet.id === "fme";
+
     const flexStyle = useMemo(() => ({
         flex: isHovered ? 1.6 : isOpposite ? 0.4 : 1,
     }), [isHovered, isOpposite]);
@@ -50,39 +55,89 @@ function SplitSide({ facet, hovered, isLeft, onHover }: {
             }
             style={flexStyle}
             className={`
-        relative overflow-hidden flex flex-col justify-end
-        p-8 md:p-14 min-h-[50dvh] md:min-h-0 md:h-full
-        transition-[flex] duration-700 cursor-pointer
-        ${facet.id === "fme" ? "bg-black" : "bg-[#141412]"}
-      `}
+                relative overflow-hidden flex flex-col justify-end
+                p-8 md:p-14 min-h-[50dvh] md:min-h-0 md:h-full
+                transition-[flex] duration-700 cursor-pointer
+                ${isFme ? "bg-black" : "bg-[#141412]"}
+            `}
         >
-            {/* Glow */}
-            <div className={`
-        absolute inset-0 pointer-events-none transition-opacity duration-700
-        ${isHovered ? "opacity-100" : "opacity-0"}
-        ${facet.id === "fme"
-                    ? "bg-[radial-gradient(circle_at_center,rgba(232,224,208,0.08)_0%,transparent_70%)]"
-                    : "bg-[radial-gradient(circle_at_center,rgba(201,168,76,0.1)_0%,transparent_70%)]"}
-      `} />
+            {/* ── Imagen de fondo del lado ── */}
+            {facet.image && (
+                <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{ zIndex: 0 }}
+                >
+                    <img
+                        src={facet.image}
+                        alt=""
+                        style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                            objectPosition: "center",
+                            transform: isHovered ? "scale(1.06)" : "scale(1.02)",
+                            transition: "transform 0.9s cubic-bezier(0.25,0.46,0.45,0.94)",
+                            filter: isOpposite
+                                ? "brightness(0.12) saturate(1.2)"
+                                : isHovered
+                                    ? `brightness(0.32) saturate(${isFme ? "1.1" : "0.9"})`
+                                    : `brightness(0.2) saturate(${isFme ? "1.2" : "1.1"})`,
+                            willChange: "transform, filter",
+                        }}
+                    />
+                    {/* Gradiente sobre la imagen para asegurar legibilidad del texto */}
+                    <div
+                        className="absolute inset-0"
+                        style={{
+                            background: isFme
+                                ? "linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.5) 45%, rgba(0,0,0,0.2) 100%)"
+                                : "linear-gradient(to top, rgba(20,20,18,0.95) 0%, rgba(20,20,18,0.55) 45%, rgba(20,20,18,0.25) 100%)",
+                        }}
+                    />
+                </div>
+            )}
+
+            {/* Glow de acento (encima de la imagen) */}
+            <div
+                className="absolute inset-0 pointer-events-none transition-opacity duration-700"
+                style={{
+                    zIndex: 1,
+                    opacity: isHovered ? 1 : 0,
+                    background: isFme
+                        ? "radial-gradient(circle at 50% 80%, rgba(232,224,208,0.06) 0%, transparent 70%)"
+                        : "radial-gradient(circle at 50% 80%, rgba(201,168,76,0.08) 0%, transparent 70%)",
+                }}
+            />
 
             {/* Letra gigante de fondo */}
-            <span className={`
-        absolute -bottom-10 fme-font-display text-[40vw] md:text-[35vw] leading-none
-        select-none pointer-events-none opacity-[0.03] text-fme-cream
-        transition-transform duration-1000
-        ${isLeft ? "-right-10" : "-left-10"}
-        ${isHovered ? "scale-110 -translate-y-[2%]" : "scale-100"}
-      `}>
-                {facet.id === "fme" ? "F" : "M"}
+            <span
+                className={`
+                    absolute -bottom-10 fme-font-display leading-none
+                    select-none pointer-events-none text-fme-cream
+                    transition-transform duration-1000
+                    ${isLeft ? "-right-10" : "-left-10"}
+                    ${isHovered ? "scale-110 -translate-y-[2%]" : "scale-100"}
+                `}
+                style={{
+                    zIndex: 1,
+                    fontSize: "clamp(200px, 35vw, 35vw)",
+                    // Con imagen de fondo la letra va más sutil
+                    opacity: facet.image ? 0.06 : 0.03,
+                }}
+            >
+                {isFme ? "F" : "M"}
             </span>
 
             {/* Contenido */}
-            <div className={`
-        relative z-10 transition-all duration-500
-        ${isOpposite ? "opacity-20 scale-[0.98] grayscale" : "opacity-100"}
-      `}>
+            <div
+                className={`
+                    relative transition-all duration-500
+                    ${isOpposite ? "opacity-20 scale-[0.98] grayscale" : "opacity-100"}
+                `}
+                style={{ zIndex: 2 }}
+            >
                 <div className="flex items-center gap-3 mb-4 md:mb-6">
-                    <span className={`h-px w-6 ${facet.id === "fme" ? "bg-white/30" : "bg-fme-gold"}`} />
+                    <span className={`h-px w-6 ${isFme ? "bg-white/30" : "bg-fme-gold"}`} />
                     <span className="text-[9px] tracking-[0.4em] uppercase text-fme-cream/50">
                         {facet.tag}
                     </span>
@@ -100,19 +155,21 @@ function SplitSide({ facet, hovered, isLeft, onHover }: {
                 </h2>
 
                 <div className={`
-          overflow-hidden transition-all duration-500
-          ${isHovered
+                    overflow-hidden transition-all duration-500
+                    ${isHovered
                         ? "max-h-60 opacity-100 translate-y-0"
                         : "max-h-0 opacity-0 translate-y-4 md:max-h-0 max-md:max-h-60 max-md:opacity-100 max-md:translate-y-0"}
-        `}>
+                `}>
                     <p className="text-fme-cream-dim text-xs leading-relaxed max-w-[280px] mb-6 md:mb-8">
                         {facet.desc}
                     </p>
                     <button className={`
-            px-8 py-3 fme-font-display text-[10px] tracking-widest uppercase
-            transition-transform active:scale-95
-            ${facet.id === "fme" ? "bg-fme-cream text-black" : "bg-fme-gold text-black"}
-          `}>
+                        px-8 py-3 fme-font-display text-[10px] tracking-widest uppercase
+                        transition-all duration-300 active:scale-95
+                        ${isFme
+                            ? "bg-fme-cream text-black hover:bg-fme-gold"
+                            : "bg-fme-gold text-black hover:bg-fme-cream"}
+                    `}>
                         {facet.cta}
                     </button>
                 </div>
@@ -121,6 +178,7 @@ function SplitSide({ facet, hovered, isLeft, onHover }: {
     );
 }
 
+// ── Sección de marcas ─────────────────────────────────────────────
 function BrandsSection() {
     const sectionRef = useRef<HTMLElement>(null);
 
@@ -133,21 +191,20 @@ function BrandsSection() {
     useGSAP(() => {
         const cards = sectionRef.current?.querySelectorAll<HTMLElement>(".brand-card-vault");
         if (!cards || cards.length === 0) return;
+
         cards.forEach((card, i) => {
-            gsap.fromTo(
-                card,
+            gsap.fromTo(card,
                 { y: 40, opacity: 0 },
                 {
-                    y: 0,
-                    opacity: 1,
+                    y: 0, opacity: 1,
                     duration: 0.8,
                     delay: i * 0.08,
                     ease: "power3.out",
                     clearProps: "transform,opacity",
                     scrollTrigger: {
                         trigger: card,
-                        start: "top 92%", 
-                        toggleActions: "play none none none", 
+                        start: "top 92%",
+                        toggleActions: "play none none none",
                         once: true,
                     },
                 }
@@ -171,14 +228,14 @@ function BrandsSection() {
             ref={sectionRef}
             className="relative bg-[#080807] py-32 md:py-52 overflow-hidden"
         >
-            {/* Texto marca de agua de fondo */}
+            {/* Marca de agua de fondo */}
             <div className="bg-archive-text absolute top-1/2 left-0 -translate-y-1/2 whitespace-nowrap pointer-events-none select-none">
                 <span className="fme-font-display text-[30vw] leading-none text-white/[0.01] uppercase tracking-tighter">
                     Selected Archive — Global Goods — FME Selection —
                 </span>
             </div>
 
-            {/* Grid técnico de fondo */}
+            {/* Grid técnico */}
             <div
                 className="absolute inset-0 opacity-[0.02] pointer-events-none"
                 style={{
@@ -188,8 +245,6 @@ function BrandsSection() {
             />
 
             <div className="relative z-10 px-6 max-w-[1400px] mx-auto">
-
-                {/* Header */}
                 <header className="mb-24">
                     <div className="flex items-center gap-4 mb-6">
                         <span className="w-2 h-2 rounded-full bg-fme-gold animate-pulse" />
@@ -204,7 +259,6 @@ function BrandsSection() {
                     </h2>
                 </header>
 
-                {/* Grid de marcas */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {BRANDS.map((brand) => {
                         const hasLogo = !!brand.logo;
@@ -217,11 +271,11 @@ function BrandsSection() {
                                 className="brand-card-vault group relative h-[450px] bg-[#0c0c0b] border border-white/5 rounded-sm p-8 flex flex-col justify-between transition-all duration-500 hover:border-fme-gold/30 hover:bg-[#11110f]"
                                 style={{ opacity: 1 }}
                             >
-                                {/* Overlay de escaneo */}
+                                {/* Línea de escaneo */}
                                 <div className="absolute top-0 left-0 w-full h-[2px] bg-fme-gold/20 opacity-0 group-hover:opacity-100 group-hover:top-full transition-all duration-[1500ms] ease-in-out pointer-events-none" />
 
                                 <div className="relative z-10 flex flex-col h-full">
-                                    {/* Header tipo etiqueta */}
+                                    {/* Header etiqueta */}
                                     <div className="flex justify-between items-start border-b border-white/5 pb-4 mb-8">
                                         <span className="fme-font-display text-[9px] text-fme-cream/30 tracking-widest group-hover:text-fme-gold transition-colors">
                                             REF_{String(brand.id).padStart(3, "0")}
@@ -285,12 +339,12 @@ function BrandsSection() {
     );
 }
 
+// ── Página ────────────────────────────────────────────────────────
 export default function Multimarca() {
     const [hovered, setHovered] = useState<HoveredSide>(null);
 
     return (
         <div className="bg-black min-h-screen">
-            {/* Split screen */}
             <div className="relative flex flex-col md:flex-row h-[100dvh] w-full overflow-hidden">
                 {FACETS.map((facet, i) => (
                     <SplitSide
@@ -305,7 +359,6 @@ export default function Multimarca() {
                     <DividerNode hovered={hovered} />
                 </div>
             </div>
-
             <BrandsSection />
         </div>
     );

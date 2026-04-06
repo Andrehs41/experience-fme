@@ -1,22 +1,26 @@
+// src/data/multimarcaData.ts
+
 export interface Facet {
     id: "fme" | "multimarca";
     tag: string;
     topLabel: string;
-    title: string[];          
-    titleAccent: number | null;     
+    title: string[];
+    titleAccent: number | null;
     desc: string;
     cta: string;
-    href: string;            
+    href: string;
     external: boolean;
+    /** Imagen de fondo del lado del split. Ruta desde /public */
+    image?: string;
 }
 
 export interface Brand {
-    external: any;
+    external: boolean;
     id: number;
     name: string;
     desc: string;
-    href: string;       // link al catálogo de esa marca
-    logo?: string;       // ruta desde /public 
+    href: string;
+    logo?: string;
 }
 
 export const FACETS: [Facet, Facet] = [
@@ -30,17 +34,19 @@ export const FACETS: [Facet, Facet] = [
         cta: "COMPRAR LÍNEA FME →",
         href: "https://storefme.com",
         external: true,
+        image: "/images/barrio/prenda-fme.jpeg",
     },
     {
         id: "multimarca",
         tag: "Otras marcas",
         topLabel: "Curaduría",
         title: ["MULTI", "MARCA"],
-        titleAccent: 1,              
+        titleAccent: 1,
         desc: "Marcas que elegimos para convivir con FME en el mismo carrito: mismo estándar, mismo soporte.",
         cta: "VER MULTIMARCA →",
         href: "https://storefme.com/multimarca",
         external: true,
+        image: "/images/barrio/ropa-1.jpg",
     },
 ];
 
@@ -51,28 +57,28 @@ export const BRANDS: Brand[] = [
         desc: "Descripción breve de la marca.",
         href: "https://storefme.com/marca-01",
         logo: "/images/barrio/tienda-1.jpeg",
-        external: false
+        external: false,
     },
     {
         id: 2,
         name: "Marca 02",
         desc: "Descripción breve de la marca.",
         href: "https://storefme.com/marca-02",
-        external: true
+        external: true,
     },
     {
         id: 3,
         name: "Marca 03",
         desc: "Descripción breve de la marca.",
         href: "https://storefme.com/marca-03",
-        external: false
+        external: false,
     },
-    { 
+    {
         id: 4,
         name: "Marca 04",
         desc: "Descripción breve de la marca.",
         href: "https://storefme.com/marca-04",
         logo: "/images/barrio/tienda-4.jpeg",
-        external: false
+        external: false,
     },
 ];

@@ -5,6 +5,7 @@ import { gsap } from "../lib/gsap";
 import MasonryGrid from "../components/MasonryGrid";
 import MagneticButton from "../components/MagneticButton";
 import { COMUNIDAD_DATA } from "../data/comunidadData";
+import HeroBackground from "../components/HeroBackground";
 
 function ComunidadHeader() {
     const ref = useRef<HTMLDivElement>(null);
@@ -21,21 +22,23 @@ function ComunidadHeader() {
     return (
         <div
             ref={ref}
-            className="relative grid grid-cols-1 overflow-hidden border-b border-[var(--border-gold-08)] bg-gradient-to-b from-[rgb(var(--gold-rgb)/0.09)] via-fme-black/40 to-transparent px-4 pb-14 pt-28 sm:px-6 sm:pb-16 sm:pt-32 md:grid-cols-2 md:items-end md:gap-12 md:px-10 md:pb-24 md:pt-40 lg:gap-16"
+            className="relative border-b border-[var(--border-gold-08)] px-4 pb-14 pt-28 sm:px-6 sm:pb-16 sm:pt-32 md:px-10 md:pb-24 md:pt-40"
         >
             <div
                 className="pointer-events-none absolute inset-0 opacity-[0.035] mix-blend-overlay [background-image:url('https://grainy-gradients.vercel.app/noise.svg')]"
                 aria-hidden
             />
-            <div
-                className="pointer-events-none absolute -right-1/4 top-0 h-[min(70vh,520px)] w-[min(90vw,640px)] rounded-full blur-3xl"
-                style={{ background: "radial-gradient(circle, rgb(var(--gold-rgb) / 0.12) 0%, transparent 65%)" }}
-                aria-hidden
+            <HeroBackground
+                src="/images/fme-hero.jpeg"
+                blur={1.5}
+                brightness={0.38}
+                saturation={1.2}
+                overlay={0.55}
+                glow="gold"
             />
-            <div className="absolute left-0 top-0 h-24 w-px bg-gradient-to-b from-fme-gold/50 to-transparent md:left-6 md:top-28" aria-hidden />
-            <div className="absolute right-0 top-1/3 h-px w-16 bg-gradient-to-l from-fme-gold/30 to-transparent md:right-10" aria-hidden />
 
-            <div className="relative z-[1]">
+            {/* Título — izquierda */}
+            <div className="relative z-[1] mb-10 md:mb-12">
                 <div className="ch-label mb-5 flex items-center gap-3 sm:mb-6">
                     <span className="h-px w-8 bg-fme-gold sm:w-10" />
                     <span className="text-[10px] font-medium uppercase tracking-[0.38em] text-fme-gold">
@@ -43,20 +46,22 @@ function ComunidadHeader() {
                     </span>
                 </div>
 
-                <h1 className="ch-title fme-font-display text-[clamp(52px,11vw,118px)] font-bold leading-[0.88] tracking-tight text-fme-cream">
+                <h1 className="ch-title fme-font-display leading-[0.88] tracking-tight text-fme-cream text-[clamp(52px,8vw,110px)]">
                     COMUNI
-                    <br />
                     <span className="text-transparent [text-shadow:none] [-webkit-text-stroke:1px_var(--gold)]">
                         DAD
                     </span>
                 </h1>
             </div>
 
-            <div className="relative z-[1] mt-10 flex flex-col justify-end gap-6 sm:mt-12 md:mt-0 md:gap-7">
-                <p className="ch-desc max-w-[22rem] text-[13px] font-light leading-[1.9] text-fme-cream-dim sm:max-w-md">
+            {/* Info — también izquierda, debajo del título */}
+            <div className="relative z-[1] flex flex-col gap-6 md:gap-7 md:max-w-lg">
+                <p className="ch-desc text-[13px] font-light leading-[1.9] text-fme-cream-dim">
                     Sin modelos de agencia: acá hay gente que ya compró, ya salió y ya mandó la foto.
                     <br />
-                    <span className="text-fme-cream/90">Si tu pieza aparece, es porque el equipo la destacó — no porque pagaste pauta.</span>
+                    <span className="text-fme-cream/90">
+                        Si tu pieza aparece, es porque el equipo la destacó — no porque pagaste pauta.
+                    </span>
                 </p>
 
                 <div className="ch-counter inline-flex w-fit items-baseline gap-3 rounded-sm border border-[var(--border-gold-10)] bg-[rgb(var(--gold-rgb)/0.04)] px-5 py-3 backdrop-blur-sm">
@@ -68,7 +73,7 @@ function ComunidadHeader() {
                     </span>
                 </div>
 
-                <div className="ch-rule h-px max-w-md origin-left bg-gradient-to-r from-[var(--border-cream-15)] via-[var(--border-cream-08)] to-transparent" />
+                <div className="ch-rule h-px max-w-sm origin-left bg-gradient-to-r from-[var(--border-cream-15)] via-[var(--border-cream-08)] to-transparent" />
             </div>
         </div>
     );
@@ -101,9 +106,8 @@ function MarqueeBand() {
                     {repeated.map((item, i) => (
                         <span
                             key={i}
-                            className={`fme-font-display px-8 text-[12px] tracking-[0.28em] sm:text-[13px] ${
-                                item === "·" ? "text-fme-gold" : "text-[var(--text-cream-muted)]"
-                            }`}
+                            className={`fme-font-display px-8 text-[12px] tracking-[0.28em] sm:text-[13px] ${item === "·" ? "text-fme-gold" : "text-[var(--text-cream-muted)]"
+                                }`}
                         >
                             {item.toUpperCase()}
                         </span>
