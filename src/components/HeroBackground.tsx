@@ -1,10 +1,3 @@
-// src/components/HeroBackground.tsx
-//
-// Fondo editorial reutilizable para heroes y headers de sección.
-//
-// Uso básico:
-//   <HeroBackground src="/images/fme-hero.jpeg" />
-//
 // Con ajustes:
 //   <HeroBackground
 //     src="/images/comunidad-hero.jpeg"
@@ -14,10 +7,6 @@
 //     saturation={0.6}
 //     glow="gold"
 //   />
-//
-// Sin imagen (solo gradiente de marca):
-//   <HeroBackground />
-
 interface HeroBackgroundProps {
     /** Ruta desde /public. Si se omite, solo se muestran los gradientes de marca. */
     src?: string;

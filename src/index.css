@@ -37,7 +37,6 @@
   /* Altura aproximada de la barra interna del header (sin safe-area) */
   --nav-height: 60px;
 
-  /* UI */
   --nav-scrim:     rgb(var(--black-rgb) / 0.92);
   --overlay-modal: rgb(var(--black-rgb) / 0.95);
 
