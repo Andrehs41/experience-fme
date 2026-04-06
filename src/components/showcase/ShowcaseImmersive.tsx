@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { gsap, ScrollTrigger, useGSAP } from "../../lib/gsap";
 import { SHOWCASE_PIECES } from "../../data/showcaseData";
 import MagneticButton from "../MagneticButton";
+import HeroBackground from "../HeroBackground";
 
 /** Curva 0–1 suave para crossfades (menos “lineal” que el fade triangular puro) */
 function smoothstep(t: number): number {
@@ -219,7 +220,15 @@ export default function ShowcaseImmersive() {
                 aria-hidden
             />
 
-            <section className="showcase-hero-reveal relative border-b border-[var(--border-gold-08)] px-5 pb-12 pt-[calc(var(--nav-height)+12px)] md:px-10 md:pb-16 md:pt-[calc(var(--nav-height)+24px)]">
+            <section className="showcase-hero-reveal relative border-b border-[var(--border-gold-08)] px-5 pb-12 pt-[calc(var(--nav-height)+12px)] md:px-10 md:pb-16 md:pt-[calc(var(--nav-height)+24px)] z[1]">
+                <HeroBackground
+                    src="/images/fme-hero.jpeg"
+                    blur={1.5}
+                    brightness={0.32}
+                    saturation={1.1}
+                    overlay={0.65}
+                    glow="cream"
+                />
                 <div className="pointer-events-none absolute -right-20 top-0 h-72 w-72 rounded-full blur-3xl md:right-10 md:top-20 md:h-96 md:w-96" style={{ background: "radial-gradient(circle, rgb(var(--gold-rgb) / 0.11) 0%, transparent 68%)" }} aria-hidden />
                 <p className="relative text-[10px] uppercase tracking-[0.42em] text-fme-gold">Showcase FME</p>
                 <h1 className="relative mt-5 max-w-[20ch] text-[clamp(2rem,6.5vw,4.25rem)] font-bold leading-[0.98] tracking-tight text-fme-cream fme-font-display">
@@ -332,11 +341,10 @@ export default function ShowcaseImmersive() {
                                     onClick={() => scrollToSlide(i)}
                                 >
                                     <span
-                                        className={`h-1.5 w-1.5 rounded-full transition-all duration-300 ${
-                                            activeSlide === i
+                                        className={`h-1.5 w-1.5 rounded-full transition-all duration-300 ${activeSlide === i
                                                 ? "scale-125 bg-fme-gold shadow-[0_0_10px_rgb(var(--gold-rgb)/0.6)]"
                                                 : "bg-fme-cream/35 group-hover:bg-fme-cream/60"
-                                        }`}
+                                            }`}
                                     />
                                 </button>
                             ))}

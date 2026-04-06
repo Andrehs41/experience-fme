@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { gsap, ScrollTrigger, useGSAP } from "../lib/gsap";
 import { ITEMS } from "../data/coleccionesData";
+import HeroBackground from "../components/HeroBackground";
 
 const SEASONS = ["FW26", "SS26", "CORE"] as const;
 type Season = (typeof SEASONS)[number];
@@ -84,17 +85,16 @@ export default function Colecciones() {
 
   return (
     <div ref={rootRef} className="fme-page-vignette-deep relative text-fme-white">
-      <div
-        className="pointer-events-none fixed inset-0 z-[1] hidden opacity-[0.04] mix-blend-overlay md:block"
-        style={{
-          backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
-        }}
-        aria-hidden
-      />
-
       <section className="relative z-[2] px-5 pb-12 pt-2 md:px-12 md:pb-16 md:pt-4 lg:px-16">
-        <div className="cc-hero-line mb-8 h-px w-16 bg-fme-gold md:mb-10 md:w-24" />
+        <div className="cc-hero-line mb-8 h-px w-16 bg-fme-gold md:mb-10 md:w-24 z-[1]" />
+        <HeroBackground
+          src="/images/fme-hero.jpeg"
+          blur={1.5}
+          brightness={0.32}
+          saturation={1.1}
+          overlay={0.65}
+          glow="cream"
+        />
         <p className="cc-hero-eyebrow text-[10px] uppercase tracking-[0.42em] text-fme-gold">
           Lookbook · temporada
         </p>
@@ -145,11 +145,10 @@ export default function Colecciones() {
                   aria-label={`Mostrar línea ${s}${active ? " (activa)" : ""}`}
                   aria-current={active ? "true" : undefined}
                   onClick={() => setSeason(s)}
-                  className={`fme-focus-ring rounded-sm border px-4 py-2.5 text-[9px] uppercase tracking-[0.22em] transition-colors md:px-5 ${
-                    active
-                      ? "border-fme-gold bg-[rgb(var(--gold-rgb)/0.12)] text-fme-gold"
-                      : "border-[var(--border-cream-10)] text-fme-cream-dim hover:border-[var(--border-cream-20)] hover:text-fme-cream"
-                  }`}
+                  className={`fme-focus-ring rounded-sm border px-4 py-2.5 text-[9px] uppercase tracking-[0.22em] transition-colors md:px-5 ${active
+                    ? "border-fme-gold bg-[rgb(var(--gold-rgb)/0.12)] text-fme-gold"
+                    : "border-[var(--border-cream-10)] text-fme-cream-dim hover:border-[var(--border-cream-20)] hover:text-fme-cream"
+                    }`}
                 >
                   {s}
                 </button>
@@ -171,9 +170,8 @@ export default function Colecciones() {
               <article
                 key={`${season}-${item.id}`}
                 data-cursor={item.title}
-                className={`colecciones-card group relative overflow-hidden rounded-sm border border-[var(--border-cream-10)] bg-fme-surface-deep transition-[border-color,box-shadow] duration-300 hover:border-[var(--border-gold-12)] hover:shadow-[0_24px_48px_rgb(var(--black-rgb)/0.45)] ${
-                  featured ? "col-span-2 aspect-[21/9] md:aspect-[2.4/1] lg:col-span-2 lg:row-span-1" : "aspect-[3/4]"
-                }`}
+                className={`colecciones-card group relative overflow-hidden rounded-sm border border-[var(--border-cream-10)] bg-fme-surface-deep transition-[border-color,box-shadow] duration-300 hover:border-[var(--border-gold-12)] hover:shadow-[0_24px_48px_rgb(var(--black-rgb)/0.45)] ${featured ? "col-span-2 aspect-[21/9] md:aspect-[2.4/1] lg:col-span-2 lg:row-span-1" : "aspect-[3/4]"
+                  }`}
               >
                 <img
                   src={item.src}
@@ -183,9 +181,8 @@ export default function Colecciones() {
                   draggable={false}
                   onLoad={() => ScrollTrigger.refresh()}
                   {...(idx === 0 ? { fetchPriority: "high" as const } : {})}
-                  className={`h-full w-full object-cover transition-[transform,filter] duration-700 ease-out group-hover:scale-[1.04] ${
-                    item.type === "scene" ? "grayscale-[35%] group-hover:grayscale-0" : ""
-                  }`}
+                  className={`h-full w-full object-cover transition-[transform,filter] duration-700 ease-out group-hover:scale-[1.04] ${item.type === "scene" ? "grayscale-[35%] group-hover:grayscale-0" : ""
+                    }`}
                 />
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-fme-black via-fme-black/20 to-transparent opacity-90 md:opacity-80" />
                 <div className="absolute inset-x-0 bottom-0 z-[1] p-3 sm:p-4 md:p-5">

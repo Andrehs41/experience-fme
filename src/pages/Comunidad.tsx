@@ -1,4 +1,3 @@
-// src/pages/Comunidad.tsx
 import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { useGSAP } from "@gsap/react";

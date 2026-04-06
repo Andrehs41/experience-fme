@@ -1,9 +1,11 @@
+// src/components/home/Hero.tsx
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "../../lib/gsap";
 import AnimatedText from "../../components/AnimatedText";
 import MagneticButton from "../../components/MagneticButton";
+import HeroBackground from "../../components/HeroBackground";
 
 export function Hero() {
     const navigate = useNavigate();
@@ -20,40 +22,37 @@ export function Hero() {
     return (
         <section
             ref={container}
-            className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden px-4 pb-16 pt-8 text-center sm:px-6 sm:pb-12 sm:pt-4"
+            className="relative flex min-h-[90dvh] flex-col items-center justify-center overflow-hidden px-4 pb-16 text-center sm:px-6 sm:pb-12 sm:pt-4"
         >
-            <div className="pointer-events-none absolute inset-0 fme-noise-soft" aria-hidden />
-            <div
-                className="pointer-events-none absolute inset-0 opacity-90"
-                aria-hidden
-                style={{
-                    background:
-                        "radial-gradient(ellipse 90% 55% at 50% -8%, rgb(var(--gold-rgb) / 0.14) 0%, transparent 52%), radial-gradient(ellipse 70% 45% at 100% 100%, rgb(var(--cream-rgb) / 0.05) 0%, transparent 55%), radial-gradient(ellipse 50% 40% at 0% 80%, rgb(var(--gold-rgb) / 0.06) 0%, transparent 50%)",
-                }}
-            />
-            <div
-                className="pointer-events-none absolute left-1/2 top-[18%] h-[min(56vw,420px)] w-[min(120vw,900px)] -translate-x-1/2 rounded-full blur-3xl"
-                style={{ background: "radial-gradient(circle, rgb(var(--gold-rgb) / 0.09) 0%, transparent 68%)" }}
-                aria-hidden
+            {/* ── Fondo ── reemplaza las 3 capas de background anteriores */}
+            <HeroBackground
+                src="/images/fme-hero.jpeg"
+                blur={1}
+                brightness={0.38}
+                saturation={1.2}
+                overlay={0.55}
+                glow="gold"
             />
 
-            <span className="hero-tag relative z-[1] mb-3 text-[11px] tracking-[0.35em] text-fme-gold sm:mb-4 sm:text-sm sm:tracking-widest">
-                FME · Medellín
-            </span>
+            <AnimatedText
+                text="· Medellín ·"
+                variant="split"
+                className="hero-tag relative z-[1] mb-3 text-[11px] tracking-[0.35em] text-fme-gold sm:mb-4 sm:text-sm sm:tracking-widest"
+            />
             <div className="hero-tag-line relative z-[1] mb-5 h-px w-14 bg-gradient-to-r from-transparent via-fme-gold/80 to-transparent sm:mb-6 sm:w-20" aria-hidden />
 
             <AnimatedText
-                text="Marca de ropa en Medellín. Pensada para la calle."
-                highlightWords={["Medellín", "calle"]}
+                text="FME"
                 variant="split"
                 immediate
-                className="relative z-[1] max-w-[min(100%,42rem)] text-[clamp(2rem,9vw,6rem)] font-bold leading-[1.05] md:max-w-4xl md:leading-tight"
+                className="relative z-[1] max-w-[min(100%,42rem)] text-[clamp(2rem,9vw,6rem)] font-bold leading-[1.05]"
             />
-
-            <p className="hero-cta relative z-[1] mt-6 max-w-xl text-sm leading-relaxed text-fme-cream-dim sm:mt-8 sm:text-base md:text-lg">
-                Ropa que sale del barrio con nombre propio: cortes, telas y siluetas que
-                aguantan el ritmo real — no el de campaña.
-            </p>
+            <AnimatedText
+                text="Ropa que sale del barrio con nombre propio: cortes, telas y siluetas que aguantan el ritmo real — no el de campaña."
+                highlightWords={["Ropa", "barrio", "nombre propio", "cortes", "telas", "siluetas"]}
+                variant="glitch"
+                className="hero-cta relative z-[1] mt-6 max-w-xl text-sm leading-relaxed text-fme-cream-dim sm:mt-8 sm:text-base md:text-lg"
+            />
 
             <div className="hero-cta relative z-[1] mt-8 flex flex-col items-center gap-3 sm:mt-10 sm:flex-row sm:gap-4">
                 <MagneticButton
