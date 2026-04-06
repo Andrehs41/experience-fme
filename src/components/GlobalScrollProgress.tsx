@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { gsap, ScrollTrigger, useGSAP } from "../lib/gsap";
+import {  ScrollTrigger, useGSAP } from "../lib/gsap";
 
 /**
  * Barra superior de progreso de lectura (scrub suave), no intrusiva.
