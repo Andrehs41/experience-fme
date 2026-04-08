@@ -29,7 +29,7 @@ function ComunidadHeader() {
                 aria-hidden
             />
             <HeroBackground
-                src="/images/fme-hero.jpeg"
+                src="/images/fme-hero.webp"
                 blur={1.5}
                 brightness={0.38}
                 saturation={1.2}
