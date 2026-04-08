@@ -26,7 +26,7 @@ export function Hero() {
         >
             {/* ── Fondo ── reemplaza las 3 capas de background anteriores */}
             <HeroBackground
-                src="/images/fme-hero.jpeg"
+                src="/images/fme-hero.webp"
                 blur={1}
                 brightness={0.38}
                 saturation={1.2}

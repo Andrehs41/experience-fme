@@ -222,7 +222,7 @@ export default function ShowcaseImmersive() {
 
             <section className="showcase-hero-reveal relative border-b border-[var(--border-gold-08)] px-5 pb-12 pt-[calc(var(--nav-height)+12px)] md:px-10 md:pb-16 md:pt-[calc(var(--nav-height)+24px)] z[1]">
                 <HeroBackground
-                    src="/images/fme-hero.jpeg"
+                    src="/images/fme-hero.webp"
                     blur={1.5}
                     brightness={0.32}
                     saturation={1.1}

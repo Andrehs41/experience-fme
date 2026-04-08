@@ -34,7 +34,7 @@ export const FACETS: [Facet, Facet] = [
         cta: "COMPRAR LÍNEA FME →",
         href: "https://storefme.com",
         external: true,
-        image: "/images/barrio/prenda-fme.jpeg",
+        image: "/images/barrio/prenda-fme.webp",
     },
     {
         id: "multimarca",
@@ -46,7 +46,7 @@ export const FACETS: [Facet, Facet] = [
         cta: "VER MULTIMARCA →",
         href: "https://storefme.com/multimarca",
         external: true,
-        image: "/images/barrio/ropa-1.jpg",
+        image: "/images/barrio/ropa-1.webp",
     },
 ];
 
@@ -56,7 +56,7 @@ export const BRANDS: Brand[] = [
         name: "Marca 01",
         desc: "Descripción breve de la marca.",
         href: "https://storefme.com/marca-01",
-        logo: "/images/barrio/tienda-1.jpeg",
+        logo: "/images/barrio/tienda-1.webp",
         external: false,
     },
     {
@@ -78,7 +78,7 @@ export const BRANDS: Brand[] = [
         name: "Marca 04",
         desc: "Descripción breve de la marca.",
         href: "https://storefme.com/marca-04",
-        logo: "/images/barrio/tienda-4.jpeg",
+        logo: "/images/barrio/tienda-4.webp",
         external: false,
     },
 ];

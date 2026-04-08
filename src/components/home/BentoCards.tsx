@@ -5,6 +5,8 @@ import { gsap } from "../../lib/gsap";
 
 // ── CSS responsive inyectado una vez ─────────────────────────────
 const BENTO_CSS = `
+  .bento-section { padding: 0 40px 100px; }
+
   .bento-grid {
     display: grid;
     grid-template-columns: 1.4fr 1fr 1fr;
@@ -17,7 +19,12 @@ const BENTO_CSS = `
   .cell-text,
   .cell-image-sm { min-height: 220px; }
 
+  @media (max-width: 900px) {
+    .bento-section { padding: 0 20px 80px; }
+  }
+
   @media (max-width: 768px) {
+    .bento-section { padding: 0 16px 72px; }
     .bento-grid {
       grid-template-columns: 1fr 1fr;
       grid-template-rows: auto;
@@ -29,9 +36,12 @@ const BENTO_CSS = `
   }
 
   @media (max-width: 480px) {
+    .bento-section { padding: 0 12px 64px; }
     .bento-grid { grid-template-columns: 1fr; }
     .cell-hero  { grid-column: unset; min-height: 260px; }
     .cell-wide  { grid-column: unset; }
+    .cell-text,
+    .cell-image-sm { min-height: 160px; }
   }
 `;
 
@@ -52,7 +62,7 @@ const ITEMS: BentoItem[] = [
     {
         num: "01", title: "IDENTIDAD", ghost: "ID", variant: "hero",
         tag: "La marca del barrio", badge: "SS25",
-        src: "/images/barrio/tienda-2.jpeg",
+        src: "/images/barrio/tienda-2.webp",
         desc: "No seguimos tendencias. Creamos desde adentro, desde lo que somos, desde el barrio.",
     },
     {
@@ -61,7 +71,7 @@ const ITEMS: BentoItem[] = [
     },
     {
         num: "—", title: "DROP 01", variant: "image-sm", cursor: "DROP",
-        src: "/images/barrio/persona-1.jpg", desc: "", ghost: "",
+        src: "/images/barrio/persona-1.webp", desc: "", ghost: "",
     },
     {
         num: "03", title: "ACTITUD", ghost: "ACT", variant: "wide",
@@ -247,7 +257,7 @@ function Cell({ item }: { item: BentoItem }) {
                     <span ref={numRef} style={S.num}>{item.num}</span>
 
                     {/* Título */}
-                    <h3 style={S.title(isHero ? "clamp(40px,5vw,64px)" : isWide ? "clamp(42px,6vw,72px)" : "clamp(26px,3.5vw,44px)")}>
+                    <h3 style={S.title(isHero ? "clamp(22px,3.5vw,60px)" : isWide ? "clamp(36px,5.5vw,68px)" : "clamp(22px,3vw,42px)")}>
                         {item.title}
                     </h3>
 
@@ -311,7 +321,8 @@ export default function BentoCards() {
     return (
         <section
             ref={sectionRef}
-            style={{ padding: "0 40px 100px", maxWidth: "1200px", margin: "0 auto" }}
+            className="bento-section"
+            style={{ maxWidth: "1200px", margin: "0 auto" }}
         >
             <div className="bento-grid">
                 {ITEMS.map((item) => <Cell key={item.title} item={item} />)}
