@@ -1,5 +1,6 @@
 // src/components/BentoCards.tsx
 import { useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "../../lib/gsap";
 
@@ -50,6 +51,8 @@ interface BentoItem {
     num: string;
     title: string;
     desc: string;
+    href: string;
+    external?: boolean;
     ghost?: string;
     tag?: string;
     badge?: string;
@@ -64,18 +67,22 @@ const ITEMS: BentoItem[] = [
         tag: "La marca del barrio", badge: "SS25",
         src: "/images/barrio/tienda-2.webp",
         desc: "No seguimos tendencias. Creamos desde adentro, desde lo que somos, desde el barrio.",
+        href: "/colecciones",
     },
     {
         num: "02", title: "BARRIO", ghost: "B", variant: "text",
         desc: "El barrio no es un lugar. Es un estado de mente, una forma de pararse ante el mundo.",
+        href: "/barrio",
     },
     {
         num: "—", title: "DROP 01", variant: "image-sm", cursor: "DROP",
         src: "/images/barrio/persona-1.webp", desc: "", ghost: "",
+        href: "/showcase",
     },
     {
         num: "03", title: "ACTITUD", ghost: "ACT", variant: "wide",
         desc: "La actitud es lo único que nadie te puede quitar. FME la lleva puesta desde el día uno.",
+        href: "/comunidad",
     },
 ];
 
@@ -112,7 +119,7 @@ const S = {
     } as React.CSSProperties,
 } as const;
 
-function Cell({ item }: { item: BentoItem }) {
+function Cell({ item, navigate }: { item: BentoItem; navigate: ReturnType<typeof useNavigate> }) {
     const cellRef = useRef<HTMLDivElement>(null);
     const lineRef = useRef<HTMLSpanElement>(null);
     const numRef = useRef<HTMLSpanElement>(null);
@@ -123,6 +130,14 @@ function Cell({ item }: { item: BentoItem }) {
     const isHero = item.variant === "hero";
     const isWide = item.variant === "wide";
     const hasImg = item.variant === "hero" || item.variant === "image-sm";
+
+    const handleClick = () => {
+        if (item.external) {
+            window.open(item.href, "_blank", "noopener noreferrer");
+        } else {
+            navigate(item.href);
+        }
+    };
 
     const onEnter = () => {
         gsap.to(lineRef.current, { scaleX: 1, duration: 0.5, ease: "expo.out" });
@@ -159,8 +174,12 @@ function Cell({ item }: { item: BentoItem }) {
             ref={cellRef}
             className={`bento-cell cell-${item.variant}`}
             data-cursor={item.cursor ?? item.title}
+            onClick={handleClick}
             onMouseEnter={onEnter}
             onMouseLeave={onLeave}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => e.key === "Enter" && handleClick()}
             style={{
                 position: "relative",
                 overflow: "hidden",
@@ -270,13 +289,11 @@ function Cell({ item }: { item: BentoItem }) {
                 </div>
 
                 {/* Flecha */}
-                {!isHero && (
-                    <span ref={arrowRef} style={
-                        isWide
-                            ? { ...S.arrow, position: "relative", bottom: "auto", right: "auto", alignSelf: "flex-start", flexShrink: 0 }
-                            : S.arrow
-                    }>↗</span>
-                )}
+                <span ref={arrowRef} style={
+                    isWide
+                        ? { ...S.arrow, position: "relative", bottom: "auto", right: "auto", alignSelf: "flex-start", flexShrink: 0 }
+                        : S.arrow
+                }>↗</span>
             </div>
         </div>
     );
@@ -284,6 +301,7 @@ function Cell({ item }: { item: BentoItem }) {
 
 export default function BentoCards() {
     const sectionRef = useRef<HTMLElement>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const id = "bento-styles";
@@ -325,7 +343,7 @@ export default function BentoCards() {
             style={{ maxWidth: "1200px", margin: "0 auto" }}
         >
             <div className="bento-grid">
-                {ITEMS.map((item) => <Cell key={item.title} item={item} />)}
+                {ITEMS.map((item) => <Cell key={item.title} item={item} navigate={navigate} />)}
             </div>
         </section>
     );

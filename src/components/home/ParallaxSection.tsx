@@ -1,33 +1,58 @@
-import { gsap } from "gsap";
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
+import { gsap } from "../../lib/gsap";
 
 export function ParallaxSection() {
     const container = useRef<HTMLDivElement>(null);
 
     useGSAP(() => {
-        gsap.to(".parallax-text", {
-            xPercent: -40,
-            ease: "none",
-            scrollTrigger: {
-                trigger: container.current,
-                start: "top bottom",
-                end: "bottom top",
-                scrub: 1,
-            },
-        });
+        // Empieza ligeramente a la derecha y avanza hacia la izquierda al hacer scroll
+        gsap.fromTo(
+            ".parallax-text",
+            { xPercent: 8 },
+            {
+                xPercent: -28,
+                ease: "none",
+                scrollTrigger: {
+                    trigger: container.current,
+                    start: "top bottom",
+                    end: "bottom top",
+                    scrub: 1.5,
+                },
+            }
+        );
     }, { scope: container });
 
     return (
         <section
             ref={container}
-            className="relative overflow-hidden border-y border-[var(--border-gold-08)] bg-[linear-gradient(180deg,rgb(var(--black-rgb)/0.4)_0%,transparent_45%,rgb(var(--gold-rgb)/0.03)_100%)] py-16 sm:py-20 md:py-24"
+            className="relative border-y border-[var(--border-gold-08)] bg-[linear-gradient(180deg,rgb(var(--black-rgb)/0.4)_0%,transparent_45%,rgb(var(--gold-rgb)/0.03)_100%)]"
+            // Sin overflow-hidden en la section para evitar cortar letras;
+            // el clip se maneja con el wrapper interior
+            style={{ overflow: "hidden" }}
         >
-            <p className="parallax-text whitespace-nowrap bg-gradient-to-r from-fme-gold/35 via-fme-cream/25 to-fme-gold/35 bg-clip-text text-[clamp(2.5rem,11vw,8vw)] font-bold tracking-tight text-transparent md:text-[8vw]">
-                MDE — FME — CALLE — MARCA — TIENDA —&nbsp;
-                MDE — FME — CALLE — MARCA — TIENDA —&nbsp;
-            </p>
+            {/* Wrapper con padding vertical generoso para que las letras no se corten */}
+            <div style={{ padding: "clamp(2.5rem,5vw,5rem) 0", overflow: "hidden" }}>
+                <p
+                    className="parallax-text whitespace-nowrap bg-gradient-to-r from-fme-gold/35 via-fme-cream/25 to-fme-gold/35 bg-clip-text text-transparent"
+                    style={{
+                        fontFamily: "var(--font-display)",
+                        fontSize: "clamp(2.5rem, 8vw, 7rem)",
+                        fontWeight: 700,
+                        letterSpacing: "-.01em",
+                        lineHeight: 1.15,
+                        // Padding extra vertical para que descenders/ascenders no se corten
+                        paddingTop: "0.15em",
+                        paddingBottom: "0.2em",
+                        display: "block",
+                        willChange: "transform",
+                    }}
+                >
+                    MDE — FME — CALLE — MARCA — TIENDA —&nbsp;
+                    MDE — FME — CALLE — MARCA — TIENDA —&nbsp;
+                    MDE — FME — CALLE — MARCA — TIENDA —&nbsp;
+                </p>
+            </div>
         </section>
     );
 }
-
