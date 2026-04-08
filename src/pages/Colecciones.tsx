@@ -88,7 +88,7 @@ export default function Colecciones() {
       <section className="relative z-[2] px-5 pb-12 pt-2 md:px-12 md:pb-16 md:pt-4 lg:px-16">
         <div className="cc-hero-line mb-8 h-px w-16 bg-fme-gold md:mb-10 md:w-24 z-[1]" />
         <HeroBackground
-          src="/images/fme-hero.jpeg"
+          src="/images/fme-hero.webp"
           blur={1.5}
           brightness={0.32}
           saturation={1.1}

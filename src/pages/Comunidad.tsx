@@ -29,7 +29,7 @@ function ComunidadHeader() {
                 aria-hidden
             />
             <HeroBackground
-                src="/images/fme-hero.jpeg"
+                src="/images/fme-hero.webp"
                 blur={1.5}
                 brightness={0.38}
                 saturation={1.2}
@@ -46,7 +46,7 @@ function ComunidadHeader() {
                     </span>
                 </div>
 
-                <h1 className="ch-title fme-font-display leading-[0.88] tracking-tight text-fme-cream text-[clamp(52px,8vw,110px)]">
+                <h1 className="ch-title fme-font-display leading-[0.88] tracking-tight text-fme-cream text-[clamp(36px,7vw,110px)]">
                     COMUNI
                     <span className="text-transparent [text-shadow:none] [-webkit-text-stroke:1px_var(--gold)]">
                         DAD

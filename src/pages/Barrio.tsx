@@ -197,11 +197,12 @@ function Slide({
                         ref={titleRef}
                         style={{
                             fontFamily: "var(--font-display, sans-serif)",
-                            fontSize: "clamp(52px, 8vw, 108px)",
+                            fontSize: "clamp(36px, 6.5vw, 96px)",
                             lineHeight: .86,
                             letterSpacing: ".03em",
                             color: "var(--cream, #e8e0d0)",
                             opacity: 0,
+                            wordBreak: "keep-all",
                         }}
                     >
                         {item.title}
@@ -211,8 +212,8 @@ function Slide({
                         ref={subRef}
                         style={{
                             marginTop: "14px",
-                            fontSize: "14px",
-                            letterSpacing: ".15em",
+                            fontSize: "clamp(10px, 1.4vw, 14px)",
+                            letterSpacing: ".12em",
                             textTransform: "uppercase",
                             color: "rgba(232,224,208,0.45)",
                             lineHeight: 1.7,
@@ -649,7 +650,7 @@ function MobileView({ items }: { items: SlideItem[] }) {
                         {/* Contenido */}
                         <div style={{
                             position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 2,
-                            padding: "0 38px 110px ",
+                            padding: "0 clamp(20px, 5vw, 38px) clamp(80px, 14vw, 110px)",
                         }}>
                             <span style={{
                                 display: "block", fontFamily: "var(--font-display, sans-serif)",
@@ -660,13 +661,14 @@ function MobileView({ items }: { items: SlideItem[] }) {
                             </span>
                             <div className="mobile-title" style={{
                                 fontFamily: "var(--font-display, sans-serif)",
-                                fontSize: "clamp(42px, 8vw, 60px)", lineHeight: .86,
+                                fontSize: "clamp(22px, 7.5vw, 56px)", lineHeight: .86,
                                 letterSpacing: ".03em", color: "var(--cream, #e8e0d0)", opacity: 0,
+                                wordBreak: "keep-all",
                             }}>
                                 {item.title}
                             </div>
                             <p className="mobile-sub" style={{
-                                marginTop: "12px", fontSize: "12px", letterSpacing: ".15em",
+                                marginTop: "12px", fontSize: "clamp(10px, 2.5vw, 13px)", letterSpacing: ".12em",
                                 textTransform: "uppercase", color: "rgba(232,224,208,0.4)",
                                 lineHeight: 1.7, opacity: 0, whiteSpace: "pre-line",
                             }}>

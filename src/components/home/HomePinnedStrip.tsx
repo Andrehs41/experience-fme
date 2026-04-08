@@ -3,13 +3,13 @@ import { Link } from "react-router-dom";
 import { gsap, ScrollTrigger, useGSAP } from "../../lib/gsap";
 
 const STRIP_IMAGES = [
-    { src: "/images/barrio/barrio-1.jpeg", alt: "FME look 1" },
-    { src: "/images/barrio/barrio-2.jpeg", alt: "FME look 2" },
-    { src: "/images/barrio/barrio-3.jpeg", alt: "FME look 3" },
-    { src: "/images/barrio/barrio-4.jpeg", alt: "FME look 4" },
-    { src: "/images/barrio/barrio-5.jpeg", alt: "FME look 5" },
-    { src: "/images/barrio/barrio-6.jpeg", alt: "FME look 6" },
-    { src: "/images/barrio/barrio-7.jpeg", alt: "FME look 7" },
+    { src: "/images/barrio/barrio-1.webp", alt: "FME look 1" },
+    { src: "/images/barrio/barrio-2.webp", alt: "FME look 2" },
+    { src: "/images/barrio/barrio-3.webp", alt: "FME look 3" },
+    { src: "/images/barrio/barrio-4.webp", alt: "FME look 4" },
+    { src: "/images/barrio/barrio-5.webp", alt: "FME look 5" },
+    { src: "/images/barrio/barrio-6.webp", alt: "FME look 6" },
+    { src: "/images/barrio/barrio-7.webp", alt: "FME look 7" },
 ];
 
 /**
