@@ -6,12 +6,13 @@ export function ParallaxSection() {
     const container = useRef<HTMLDivElement>(null);
 
     useGSAP(() => {
-        // Empieza ligeramente a la derecha y avanza hacia la izquierda al hacer scroll
+        // Usa vw en vez de xPercent: xPercent es % del ancho propio del elemento
+        // (que es enorme por ser whitespace-nowrap), lo cual desplazaba demasiado
         gsap.fromTo(
             ".parallax-text",
-            { xPercent: 8 },
+            { x: "8vw" },
             {
-                xPercent: -28,
+                x: "-25vw",
                 ease: "none",
                 scrollTrigger: {
                     trigger: container.current,
