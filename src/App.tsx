@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import MainLayout from "./components/MainLayout";
 import Home from "./pages/Home";
 import Barrio from "./pages/Barrio";
@@ -14,7 +15,7 @@ export default function App() {
   const [introDone, setIntroDone] = useState(false);
   const handleDone = useCallback(() => setIntroDone(true), []);
   return (
-    <>
+    <HelmetProvider>
       {!introDone && <Intro onComplete={handleDone} />}
       <BrowserRouter>
         <Routes>
@@ -31,7 +32,6 @@ export default function App() {
                 <Footer variant="colecciones" />
               </>
             } />
-
             <Route path="/barrio" element={
               <>
                 <Barrio />
@@ -56,11 +56,9 @@ export default function App() {
                 <Footer variant="colecciones" />
               </>
             } />
-
           </Route>
         </Routes>
       </BrowserRouter>
-    </>
+    </HelmetProvider>
   );
-
 }

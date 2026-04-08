@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { gsap, ScrollTrigger, useGSAP } from "../lib/gsap";
 import { ITEMS } from "../data/coleccionesData";
 import HeroBackground from "../components/HeroBackground";
+import Seo from "../components/Seo";
 
 const SEASONS = ["FW26", "SS26", "CORE"] as const;
 type Season = (typeof SEASONS)[number];
@@ -85,6 +86,13 @@ export default function Colecciones() {
 
   return (
     <div ref={rootRef} className="fme-page-vignette-deep relative text-fme-white">
+      <Seo
+        title="Colecciones FME – Lookbook FW26 | Medellín"
+        description="Lookbook de FME: piezas y escenas en contexto. Temporadas FW26, SS26 y CORE. Elegí tu línea y encontrá talle y stock en tiempo real en la tienda."
+        canonical="/colecciones"
+        ogImage="/images/barrio/tienda-2.webp"
+        keywords="colecciones FME, lookbook FW26, temporadas FME, moda Medellín, tienda online"
+      />
       <section className="relative z-[2] px-5 pb-12 pt-2 md:px-12 md:pb-16 md:pt-4 lg:px-16">
         <div className="cc-hero-line mb-8 h-px w-16 bg-fme-gold md:mb-10 md:w-24 z-[1]" />
         <HeroBackground

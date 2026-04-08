@@ -6,6 +6,7 @@ import MasonryGrid from "../components/MasonryGrid";
 import MagneticButton from "../components/MagneticButton";
 import { COMUNIDAD_DATA } from "../data/comunidadData";
 import HeroBackground from "../components/HeroBackground";
+import Seo from "../components/Seo";
 
 function ComunidadHeader() {
     const ref = useRef<HTMLDivElement>(null);
@@ -170,6 +171,13 @@ function BottomCTA() {
 export default function Comunidad() {
     return (
         <main className="fme-page-vignette relative min-h-screen text-fme-cream fme-noise-soft">
+            <Seo
+                title="Comunidad – FME | Gente Real, Ropa Real"
+                description="La comunidad FME en fotos. Gente real con nuestras piezas, sin modelos de agencia. Si tu foto aparece es porque el equipo la eligió, no porque pagaste pauta."
+                canonical="/comunidad"
+                ogImage="/images/barrio/persona-1.webp"
+                keywords="comunidad FME, gente real, fotos comunidad, streetwear Medellín"
+            />
             <ComunidadHeader />
             <MarqueeBand />
 

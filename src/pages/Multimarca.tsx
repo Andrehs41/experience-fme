@@ -4,6 +4,7 @@ import { useGSAP } from "@gsap/react";
 import { gsap, ScrollTrigger } from "../lib/gsap";
 import { FACETS, BRANDS } from "../data/multimarcaData";
 import type { Facet } from "../data/multimarcaData";
+import Seo from "../components/Seo";
 
 type HoveredSide = "fme" | "multimarca" | null;
 
@@ -345,6 +346,13 @@ export default function Multimarca() {
 
     return (
         <div className="bg-black min-h-screen">
+            <Seo
+                title="FME + Multimarca – La Tienda | Medellín"
+                description="Línea FME y marcas curadas en un solo carrito. Mismo equipo, mismo soporte, sin intermediarios. Todo en la tienda online storefme.com."
+                canonical="/multimarca"
+                ogImage="/images/barrio/prenda-fme.webp"
+                keywords="multimarca FME, tienda Medellín, marcas curadas, FME store"
+            />
             <div className="relative flex flex-col md:flex-row h-[100dvh] w-full overflow-hidden">
                 {FACETS.map((facet, i) => (
                     <SplitSide

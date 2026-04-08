@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { gsap } from "../lib/gsap";
 import { useGSAP } from "@gsap/react";
 import { BARRIO_DATA } from "../data/barrioData";
+import Seo from "../components/Seo";
 
 // ── Tipos ─────────────────────────────────────────────────────────
 interface SlideItem {
@@ -744,7 +745,16 @@ export default function Barrio() {
         <div style={{ minHeight: "100dvh", background: "#0a0a0a" }} />
     );
 
-    return isDesktop
-        ? <DesktopView items={items} />
-        : <MobileView items={items} />;
+    return (
+        <>
+            <Seo
+                title="El Barrio – FME | Fotografía Editorial Medellín"
+                description="Recorrí el barrio con FME. Fotografía editorial desde las calles de Medellín: cada pieza en su contexto real, sin set ni artificio."
+                canonical="/barrio"
+                ogImage="/images/barrio/barrio-1.webp"
+                keywords="barrio FME, fotografía editorial Medellín, calle, streetwear Colombia"
+            />
+            {isDesktop ? <DesktopView items={items} /> : <MobileView items={items} />}
+        </>
+    );
 }

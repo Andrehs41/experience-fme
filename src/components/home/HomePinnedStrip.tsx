@@ -3,13 +3,15 @@ import { Link } from "react-router-dom";
 import { gsap, ScrollTrigger, useGSAP } from "../../lib/gsap";
 
 const STRIP_IMAGES = [
-    { src: "/images/barrio/barrio-1.webp", alt: "FME look 1" },
-    { src: "/images/barrio/barrio-2.webp", alt: "FME look 2" },
-    { src: "/images/barrio/barrio-3.webp", alt: "FME look 3" },
-    { src: "/images/barrio/barrio-4.webp", alt: "FME look 4" },
-    { src: "/images/barrio/barrio-5.webp", alt: "FME look 5" },
-    { src: "/images/barrio/barrio-6.webp", alt: "FME look 6" },
-    { src: "/images/barrio/barrio-7.webp", alt: "FME look 7" },
+    { src: "/images/barrio/sesion-fme-04.webp", alt: "FME sesión editorial — esencia" },
+    { src: "/images/barrio/barrio-1.webp",       alt: "FME look barrio" },
+    { src: "/images/barrio/sesion-fme-07.webp",  alt: "FME sesión editorial — silueta" },
+    { src: "/images/barrio/barrio-3.webp",       alt: "FME look calle" },
+    { src: "/images/barrio/sesion-fme-01.webp",  alt: "FME sesión editorial — actitud" },
+    { src: "/images/barrio/barrio-5.webp",       alt: "FME look noche" },
+    { src: "/images/barrio/sesion-fme-05.webp",  alt: "FME sesión editorial — horizonte" },
+    { src: "/images/barrio/barrio-7.webp",       alt: "FME look comunidad" },
+    { src: "/images/barrio/sesion-fme-08.webp",  alt: "FME sesión editorial — archivo" },
 ];
 
 /**
