@@ -4,6 +4,7 @@ import { gsap } from "../lib/gsap";
 import { useGSAP } from "@gsap/react";
 import { BARRIO_DATA } from "../data/barrioData";
 import Seo from "../components/Seo";
+import VideoSection from "../components/home/VideoSection";
 
 // ── Tipos ─────────────────────────────────────────────────────────
 interface SlideItem {
@@ -25,6 +26,9 @@ const SUBTITLES: Record<number, string> = {
     5: "Hecho en Medellín.\nPara el mundo.",
     6: "Más que ropa.\nEs identidad en movimiento.",
     7: "Únete al movimiento.\nVive el barrio.",
+    8: "Desde donde todo comenzó.\nRaíz pura.",
+    9: "Cada pieza tiene historia.\nCada historia tiene barrio.",
+    10: "La cultura no se importa.\nSe construye aquí.",
 };
 
 // ── CSS inyectado — maneja responsive sin Tailwind breakpoints ────
@@ -755,6 +759,11 @@ export default function Barrio() {
                 keywords="barrio FME, fotografía editorial Medellín, calle, streetwear Colombia"
             />
             {isDesktop ? <DesktopView items={items} /> : <MobileView items={items} />}
+            <VideoSection
+                headline={"EL\nBARRIO."}
+                sub="Medellín · FME · 2025"
+                poster="/images/barrio/sesion-fme-03.webp"
+            />
         </>
     );
 }
