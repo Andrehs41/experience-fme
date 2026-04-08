@@ -10,7 +10,7 @@ export interface ComunidadMember {
 export const COMUNIDAD_DATA: ComunidadMember[] = [
     {
         id: 1,
-        src: "/images/barrio/tienda-5.jpeg",
+        src: "/images/barrio/tienda-5.webp",
         name: "Sebastián M.",
         collection: "Hoodie Vol.1",
         date: "Ene 2025",
@@ -18,7 +18,7 @@ export const COMUNIDAD_DATA: ComunidadMember[] = [
     },
     {
         id: 2,
-        src: "/images/barrio/tienda-2.jpeg",
+        src: "/images/barrio/tienda-2.webp",
         name: "Valentina R.",
         collection: "Tee Essential",
         date: "Feb 2025",
@@ -26,7 +26,7 @@ export const COMUNIDAD_DATA: ComunidadMember[] = [
     },
     {
         id: 3,
-        src: "/images/barrio/barrio-3.jpeg",
+        src: "/images/barrio/barrio-3.webp",
         name: "Camilo T.",
         collection: "Cargo Vol.2",
         date: "Feb 2025",
@@ -34,7 +34,7 @@ export const COMUNIDAD_DATA: ComunidadMember[] = [
     },
     {
         id: 4,
-        src: "/images/barrio/barrio-2.jpeg",
+        src: "/images/barrio/barrio-2.webp",
         name: "Daniela P.",
         collection: "Hoodie Barrio",
         date: "Mar 2025",
@@ -42,7 +42,7 @@ export const COMUNIDAD_DATA: ComunidadMember[] = [
     },
     {
         id: 5,
-        src: "/images/barrio/persona-2.jpg",
+        src: "/images/barrio/persona-2.webp",
         name: "Felipe A.",
         collection: "SS25 Drop",
         date: "Mar 2025",
@@ -50,7 +50,7 @@ export const COMUNIDAD_DATA: ComunidadMember[] = [
     },
     {
         id: 6,
-        src: "/images/barrio/barrio-1.jpeg",
+        src: "/images/barrio/barrio-1.webp",
         name: "Laura G.",
         collection: "Pants Essential",
         date: "Abr 2025",

@@ -52,7 +52,7 @@ const ITEMS: BentoItem[] = [
     {
         num: "01", title: "IDENTIDAD", ghost: "ID", variant: "hero",
         tag: "La marca del barrio", badge: "SS25",
-        src: "/images/barrio/tienda-2.jpeg",
+        src: "/images/barrio/tienda-2.webp",
         desc: "No seguimos tendencias. Creamos desde adentro, desde lo que somos, desde el barrio.",
     },
     {
@@ -61,7 +61,7 @@ const ITEMS: BentoItem[] = [
     },
     {
         num: "—", title: "DROP 01", variant: "image-sm", cursor: "DROP",
-        src: "/images/barrio/persona-1.jpg", desc: "", ghost: "",
+        src: "/images/barrio/persona-1.webp", desc: "", ghost: "",
     },
     {
         num: "03", title: "ACTITUD", ghost: "ACT", variant: "wide",
